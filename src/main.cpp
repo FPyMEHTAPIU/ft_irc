@@ -1,3 +1,6 @@
+#include <exception>
+#include <csignal>
+#include <string>
 #include <iostream>
 #include <cstdlib>
 #include "Server.hpp"
