@@ -8,14 +8,14 @@ std::set<Channel> Server::getChannels() const {
   return _channels;
 }
 
-std::set<Client> Server::getClients() const {
-  return _clients;
-}
+// std::set<Client> Server::getClients() const {
+//   return _clients;
+// }
 
 void Server::addChannel(Channel channel) {
   _channels.insert(channel);
 }
 
-void Server::addClient(Client client) {
-  _clients.insert(client);
-}
+// void Server::addClient(Client client) {
+//   _clients.insert(client);
+// }
