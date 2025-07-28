@@ -15,6 +15,9 @@ NAME = ircserv
 SRC_DIR 		=	src
 OBJ_DIR 		=	obj
 
+# Source files - put there
+# PARS_FILES		=	file_validation.c
+
 # SRC_FILES		=	$(addprefix $(PARS_DIR)/, $(PARS_FILES)) \
 # 					$(addprefix $(DRAWING_DIR)/, $(DRAWING_FILES)) \
 # 					$(addprefix $(RAYS_DIR)/, $(RAYS_FILES)) \
@@ -22,7 +25,8 @@ OBJ_DIR 		=	obj
 # 					$(addprefix $(CLEAN_DIR)/, $(CLEAN_FILES)) \
 # 					$(addprefix $(ERR_DIR)/, $(ERR_FILES)) \
 # 					$(addprefix $(UTILS_DIR)/, $(UTILS_FILES))
-SRC_FILES		=	main.cpp
+SRC_FILES		=	main.cpp \
+		Server.cpp
 
 SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
@@ -56,6 +60,3 @@ fclean: clean
 	@echo "$(RED)☣️  CLEAR ☣️$(DEF_COLOR)"
 
 re: fclean all
-
-# Source files - put there
-# PARS_FILES		=	file_validation.c
