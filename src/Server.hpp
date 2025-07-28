@@ -4,7 +4,7 @@
 #include "Channel.hpp"
 #include "Client.hpp"
 
-class Client;
+// class Client;
 class Channel;
 
 class Server {
@@ -12,7 +12,7 @@ class Server {
     const int _PORT;
     const std::string _PASSWORD;
     std::set<Channel> _channels;
-    std::set<Client> _clients;
+    // std::set<Client> _clients;
 
   public:
     Server() = delete;
@@ -21,7 +21,7 @@ class Server {
     ~Server();
 
     std::set<Channel> getChannels() const;
-    std::set<Client> getClients() const;
+    // std::set<Client> getClients() const;
     void addChannel(Channel channel);
-    void addClient(Client client);
+    //void addClient(Client client);
 };
