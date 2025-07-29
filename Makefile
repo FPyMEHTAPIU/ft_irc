@@ -29,6 +29,7 @@ SRC_FILES		=	main.cpp \
 		Channel.cpp \
 		Client.cpp \
 		Server.cpp \
+		parser/parser.cpp \
 		utils.cpp
 
 SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
