@@ -1,21 +1,14 @@
 #include "../irc.hpp"
 
-bool validateArgs(int argc, char **argv) {
+int validateArgs(int argc, char **argv) {
 	if (argc != 3) {
-        std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;
-        return false;
+        throw std::invalid_argument("Usage: ./ircserv <port> <password>");
     }
-	return true;
-}
 
-bool parser(int port, std::string password) {
-	if (port <= 0 || port > 65535) {
-        std::cerr << "Error: Invalid port number. Must be between 1 and 65535." << std::endl;
-        return false;
+	int port = std::atoi(argv[1]);
+    if (port <= 0 || port > 65535) {
+        throw std::out_of_range("Invalid port number. Must be between 1 and 65535.");
     }
-    if (password.empty()) {
-        std::cerr << "Error: Password cannot be empty." << std::endl;
-        return false;
-    }
-	return true;
+	
+	return port;
 }

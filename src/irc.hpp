@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 
+#define ANSI_RED "\033[0;91m"
+#define ANSI_RESET "\033[0;39m"
+
 std::string generateRandomId();
-bool validateArgs(int argc, char **argv);
-bool parser(int port, std::string password);
+int validateArgs(int argc, char **argv);
