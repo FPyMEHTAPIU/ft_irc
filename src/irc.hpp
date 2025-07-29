@@ -6,3 +6,4 @@
 
 std::string generateRandomId();
 int validateArgs(int argc, char **argv);
+void validateClientName(std::string name);

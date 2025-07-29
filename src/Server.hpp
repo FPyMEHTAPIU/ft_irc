@@ -11,7 +11,9 @@
 #include "Client.hpp"
 
 #define SERVER_BACKLOG 10 // max number of pending connections
-
+#ifndef SOCK_NONBLOCK
+# define SOCK_NONBLOCK 2
+#endif
 // class Client;
 class Channel;
 
