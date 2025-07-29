@@ -1,2 +1,0 @@
-#include "irc.hpp"
-
