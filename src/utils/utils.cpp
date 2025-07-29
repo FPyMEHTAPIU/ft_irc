@@ -1,10 +1,8 @@
-#include "irc.hpp"
+#include "../irc.hpp"
 #include <string>
 #include <set>
 #include <algorithm>
 #include <cctype>
-
-// bool isChannelNameValid
 
 bool isValidChannelName(const std::string& name) {
     if (name.empty() || name[0] != '#')

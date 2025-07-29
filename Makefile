@@ -30,7 +30,7 @@ SRC_FILES		=	main.cpp \
 		Client.cpp \
 		Server.cpp \
 		parser/parser.cpp \
-		utils.cpp \
+		utils/utils.cpp \
 		validation.cpp
 
 SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
