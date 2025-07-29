@@ -27,6 +27,7 @@ OBJ_DIR 		=	obj
 # 					$(addprefix $(UTILS_DIR)/, $(UTILS_FILES))
 SRC_FILES		=	main.cpp \
 		Channel.cpp \
+		Client.cpp \
 		Server.cpp \
 		utils.cpp
 

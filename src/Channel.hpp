@@ -10,8 +10,8 @@ class Channel {
     std::string _name;
     const std::string _ID;
     std::string _topic;
-    // std::set<Client> _users;
-    // std::set<Client> _operators;
+    std::set<Client> _users;
+    std::set<Client> _operators;
 
     // Modes
     bool _isInviteOnly;
@@ -26,8 +26,8 @@ class Channel {
     ~Channel();
     bool operator<(Channel const& channel) const;
 
-    // std::set<Client> getUsers() const;
-    // std::set<Client> getOperators() const;
+    std::set<Client> getUsers() const;
+    std::set<Client> getOperators() const;
     std::string getName() const;
     std::string getId() const;
     std::string getTopic() const;
@@ -38,8 +38,8 @@ class Channel {
     // Only for operators
     void setName(std::string newName);
     void setTopic(std::string newName);
-    // void addUser(Client newUser);
-    // void addOperator(Client newOperator);
+    void addUser(Client newUser);
+    void addOperator(Client newOperator);
     void setIsInviteOnly(bool newMode);
     void setIsTopicChangeMode(bool newMode);
     void setUserLimit(int newLimit);

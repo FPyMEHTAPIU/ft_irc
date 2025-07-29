@@ -16,13 +16,13 @@ bool Channel::operator<(Channel const& channel) const {
   return _name < channel._name;
 }
 
-// std::set<Client> Channel::getUsers() const {
-//   return _users;
-// }
+std::set<Client> Channel::getUsers() const {
+  return _users;
+}
 
-// std::set<Client> Channel::getOperators() const {
-//   return _operators;
-// }
+std::set<Client> Channel::getOperators() const {
+  return _operators;
+}
 
 std::string Channel::getName() const {
   return _name;
@@ -61,13 +61,13 @@ void Channel::setTopic(std::string newTopic) {
   }
 }
 
-// void Channel::addUser(Client newUser) {
-//   _users.insert(newUser);
-// }
+void Channel::addUser(Client newUser) {
+  _users.insert(newUser);
+}
 
-// void Channel::addOperator(Client newOperator) {
-//   _operators.insert(newOperator);
-// }
+void Channel::addOperator(Client newOperator) {
+  _operators.insert(newOperator);
+}
 
 void Channel::setIsInviteOnly(bool newMode) {
   _isInviteOnly = newMode;
