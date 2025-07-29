@@ -3,6 +3,7 @@
 
 Channel::Channel(std::string name, Client creator): _name(name), _ID(generateRandomId()) {
   //_operators.insert(creator);
+  (void)creator;
   _topic = "";
   _isInviteOnly = false;
   _isTopicChangeMode = false;

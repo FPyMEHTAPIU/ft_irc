@@ -35,7 +35,8 @@ SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 # Object files
 OBJ 			=	$(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
 
-FLAGS = -std=c++20 -Wall -Werror -Wextra
+CXX = c++
+CXXFLAGS = -std=c++20 -Wall -Werror -Wextra
 
 RM = rm -rf
 
@@ -45,12 +46,12 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@echo "$(BLUE)🛠  Compiling ircserv... 🛠$(DEF_COLOR)"
-	@c++ $(FLAGS) $(OBJ) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 	@echo "$(GREEN)🥳 Success!🥳$(DEF_COLOR)"
 
 $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
 	@echo "$(YELLOW)🚽 Deleting object files... 🚽$(DEF_COLOR)"
