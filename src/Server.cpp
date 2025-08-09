@@ -6,9 +6,10 @@
 #include <iostream>
 #include <set>
 #include <string>
+#include <algorithm>  // for std::find_if
 
 
-Server::Server(int port, std::string password): _PORT(port), _PASSWORD(password), _serverSocket(-1) {
+Server::Server(int port, std::string password): _PORT(port),  _status(false),_PASSWORD(password), _serverSocket(-1) {
     setupSocket();
     bindSocket();
     listenSocket();
@@ -78,6 +79,107 @@ void Server::start() {
     serverPoll.revents = 0;
     _pollFds.push_back(serverPoll);
 }
+
+void Server::run() {
+    std::cout << "IRC Server is running..." << std::endl;
+    _status = true;
+
+    while (_status == true) {
+        int pollRes = poll(_pollFds.data(), _pollFds.size(), 1000); //tick 1000ms
+
+        if (pollRes < 0) throw std::runtime_error("Poll failed: " + std::string(strerror(errno)));
+        if (pollRes == 0) continue;
+
+        size_t i = 0;
+        while (i < _pollFds.size()) {
+        // POOLIN - this means data is available to read
+          if (_pollFds[i].revents & POLLIN) {
+             if (_pollFds[i].fd == _serverSocket) 
+                 acceptNewClient();
+             else
+                 handleClientData(_pollFds[i].fd);
+          }
+
+          // handle disconnections here
+          // POLLHUP - Poll Hang Up -  client pressed ctrl+c or closed irc client
+          // POLLERR - Poll Error - socket error occurred
+          if (_pollFds[i].revents & (POLLHUP | POLLERR)) {
+              if (_pollFds[i].fd != _serverSocket) {
+                  removeClient(_pollFds[i].fd);
+                  // TODO check if we need to adjust the index
+                  continue;
+              }
+          }
+          ++i;
+        }
+    }
+}
+
+void Server::acceptNewClient() {
+    struct sockaddr_in clientAddr; // needed for accept()
+    socklen_t clientAddrLen = sizeof(clientAddr); // needed for accept()
+    
+    // accept the pending connection
+    int clientSocket = accept(_serverSocket, (struct sockaddr*)&clientAddr, &clientAddrLen);
+    
+    if (clientSocket < 0) {
+        if (errno != EWOULDBLOCK && errno != EAGAIN) {
+            std::cerr << "Failed to accept client: " << strerror(errno) << std::endl; // real error
+        }
+        return; // If it was EWOULDBLOCK/EAGAIN, just return
+    }
+    
+    // Add client to poll monitoring
+    struct pollfd clientPoll;
+    clientPoll.fd = clientSocket;
+    clientPoll.events = POLLIN;
+    clientPoll.revents = 0;
+    _pollFds.push_back(clientPoll);
+    
+    std::cout << "New client connected: FD " << clientSocket 
+              << " from " << inet_ntoa(clientAddr.sin_addr) << std::endl;
+}
+
+void Server::handleClientData(int clientFd) {
+    char buffer[1024]; // TODO: define a constant for buffer size
+
+   
+    ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0);  // attempt to read data
+    
+    // handle read errors and disconnections
+    if (bytesRead <= 0) {
+        // == 0  means client closed connection gracefully
+        if (bytesRead == 0) std::cout << "Client FD " << clientFd << " disconnected." << std::endl;
+        else if (errno != EWOULDBLOCK && errno != EAGAIN) {
+            // real error!
+            std::cerr << "Error reading from client FD " << clientFd << ": " 
+                     << strerror(errno) << std::endl;
+        }
+        removeClient(clientFd);
+        return;
+    }
+    buffer[bytesRead] = '\0';
+    std::cout << "Received from client fd " << clientFd << ": " << buffer;
+    
+    // just echo back for now
+    std::string response = "Echo: " + std::string(buffer);
+    send(clientFd, response.c_str(), response.length(), 0);
+}
+
+void Server::removeClient(int clientFd) {
+    // Find the client socket in the pollfd vector
+    auto it = std::find_if(_pollFds.begin(), _pollFds.end(), [clientFd](const struct pollfd& pfd) {
+            return pfd.fd == clientFd;
+        });
+    
+    // If found, clean up the client
+    if (it != _pollFds.end()) {
+        close(clientFd); 
+        _pollFds.erase(it); //remove from the vector
+        std::cout << "Client FD " << clientFd << " removed." << std::endl;
+    }
+}
+
 
 
 void Server::stop() {

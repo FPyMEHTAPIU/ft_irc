@@ -19,6 +19,7 @@ class Server
 {
 private:
   const int _PORT;
+  bool _status;
   const std::string _PASSWORD;
 
   std::set<Channel> _channels;
@@ -40,11 +41,13 @@ public:
 
   // Socket operations
   void start();
-  // void run();
+  void run();
   void stop();
-  // void acceptNewClient();
-  // void handleClientData(int clientFd);
-  // void removeClient(int clientFd);
+
+
+  void acceptNewClient();
+  void handleClientData(int clientFd);
+  void removeClient(int clientFd);
 
   std::set<Channel> getChannels() const;
   std::set<Client> getClients() const;
