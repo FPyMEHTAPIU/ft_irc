@@ -17,6 +17,7 @@ int main(int argc, char* argv[]) {
 		
         Server server(port, password);
         server.start();
+		server.run();
         // server.run();
     } catch (const std::exception& e) {
         std::cerr << ANSI_RED << "Error\n" << ANSI_RESET << e.what() << std::endl;

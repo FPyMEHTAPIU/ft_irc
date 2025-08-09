@@ -8,7 +8,7 @@
 #include <string>
 
 
-Server::Server(int port, std::string password): _PORT(port), _PASSWORD(password), _serverSocket(-1) {
+Server::Server(int port, std::string password): _PORT(port),  _status(false),_PASSWORD(password), _serverSocket(-1) {
     setupSocket();
     bindSocket();
     listenSocket();
@@ -77,6 +77,32 @@ void Server::start() {
     serverPoll.events = POLLIN;
     serverPoll.revents = 0;
     _pollFds.push_back(serverPoll);
+}
+
+void Server::run() {
+    std::cout << "IRC Server is running..." << std::endl;
+    _status = true;
+
+    while (_status == true) {
+        int pollRes = poll(_pollFds.data(), _pollFds.size(), 1000); //tick 1000ms
+
+        if (pollRes < 0) throw std::runtime_error("Poll failed: " + std::string(strerror(errno)));
+        if (pollRes == 0) continue;
+
+        size_t i = 0;
+        while (i < _pollFds.size()) {
+          if (_pollFds[i].revents & POLLIN) {
+             if (_pollFds[i].fd == _serverSocket) 
+                 acceptNewClient();
+             else
+                 handleClientData(_pollFds[i].fd);
+
+          }
+          ++i;
+        }
+
+        //handle disconnections here
+    }
 }
 
 
