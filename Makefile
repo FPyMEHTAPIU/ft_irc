@@ -39,11 +39,11 @@ SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ 			=	$(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
 
 CXX = c++
-CXXFLAGS = -std=c++20 -Wall -Werror -Wextra
+CXXFLAGS = -std=c++20 -Wall -Werror -Wextra -g
 
 RM = rm -rf
 
-.PHONY = all clean fclean re
+.PHONY = all clean fclean re test
 
 all: $(NAME)
 
@@ -66,3 +66,8 @@ fclean: clean
 	@echo "$(RED)☣️  CLEAR ☣️$(DEF_COLOR)"
 
 re: fclean all
+
+test: all
+	@cmake -S . -B build
+	@cmake --build build
+	@(cd build && ctest --output-on-failure)

@@ -4,7 +4,7 @@ static bool startsWith(std::string str, std::string symbols) {
   char firstChar = str[0];
   for (char c: symbols) {
     if (firstChar == c) {
-      return false;
+      return true;
     }
   }
   return false;
