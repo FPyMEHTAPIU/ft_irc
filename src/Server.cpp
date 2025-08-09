@@ -6,6 +6,7 @@
 #include <iostream>
 #include <set>
 #include <string>
+#include <algorithm>  // for std::find_if
 
 
 Server::Server(int port, std::string password): _PORT(port),  _status(false),_PASSWORD(password), _serverSocket(-1) {
@@ -91,23 +92,26 @@ void Server::run() {
 
         size_t i = 0;
         while (i < _pollFds.size()) {
+        // POOLIN - this means data is available to read
           if (_pollFds[i].revents & POLLIN) {
              if (_pollFds[i].fd == _serverSocket) 
                  acceptNewClient();
              else
                  handleClientData(_pollFds[i].fd);
+          }
 
+          // handle disconnections here
+          // POLLHUP - Poll Hang Up -  client pressed ctrl+c or closed irc client
+          // POLLERR - Poll Error - socket error occurred
+          if (_pollFds[i].revents & (POLLHUP | POLLERR)) {
+              if (_pollFds[i].fd != _serverSocket) {
+                  removeClient(_pollFds[i].fd);
+                  // TODO check if we need to adjust the index
+                  continue;
+              }
           }
           ++i;
         }
-
-        //handle disconnections here
-        if (_pollFds[i].revents & (POLLHUP | POLLERR)) {
-                if (_pollFds[i].fd != _serverSocket) {
-                    removeClient(_pollFds[i].fd);
-                    --i; // Adjust index 
-                }
-            }
     }
 }
 
@@ -120,9 +124,19 @@ void Server::handleClientData(int clientFd) {
     // TODO: Implement client data handling
     std::cout << "handleClientData() called for FD " << clientFd << " - not yet implemented" << std::endl;
 }
+
 void Server::removeClient(int clientFd) {
-    // TODO: Implement client removal
-    std::cout << "removeClient() called for FD " << clientFd << " - not yet implemented" << std::endl;
+    // Find the client in the poll with lambda function
+    auto it = std::find_if(_pollFds.begin(), _pollFds.end(), [clientFd](const struct pollfd& pfd) {
+            return pfd.fd == clientFd;
+        });
+    
+    // If found, clean up the client
+    if (it != _pollFds.end()) {
+        close(clientFd); 
+        _pollFds.erase(it); //remove from the vector
+        std::cout << "Client FD " << clientFd << " removed." << std::endl;
+    }
 }
 
 
