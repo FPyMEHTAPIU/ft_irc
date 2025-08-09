@@ -97,3 +97,67 @@ TEST(ValidateClientNameTest, MessageForEmpty) {
         EXPECT_NE(std::string(e.what()).find("empty"), std::string::npos);
     }
 }
+// ---------- Boundary length tests ----------
+TEST(ValidateClientNameTest, SingleCharacterName) {
+    EXPECT_NO_THROW(validateClientName("A"));
+}
+
+// ---------- Case sensitivity and allowed chars ----------
+TEST(ValidateClientNameTest, AllUppercase) {
+    EXPECT_NO_THROW(validateClientName("USERNAME"));
+}
+
+TEST(ValidateClientNameTest, AllLowercase) {
+    EXPECT_NO_THROW(validateClientName("username"));
+}
+
+TEST(ValidateClientNameTest, UnderscoreOnlyInside) {
+    EXPECT_NO_THROW(validateClientName("user_name"));
+}
+
+TEST(ValidateClientNameTest, DashOnlyInside) {
+    EXPECT_NO_THROW(validateClientName("user-name"));
+}
+
+// ---------- Multiple invalid conditions ----------
+TEST(ValidateClientNameTest, StartsWithInvalidAndContainsSpace) {
+    EXPECT_THROW(validateClientName(":user name"), std::invalid_argument);
+}
+
+// ---------- Exception message checks ----------
+
+TEST(ValidateClientNameTest, MessageForAsterisk) {
+    try {
+        validateClientName("user*name");
+        FAIL() << "Expected std::invalid_argument";
+    } catch (const std::invalid_argument& e) {
+        EXPECT_NE(std::string(e.what()).find("*"), std::string::npos);
+    }
+}
+
+TEST(ValidateClientNameTest, MessageForDot) {
+    try {
+        validateClientName("evil.dot");
+        FAIL() << "Expected std::invalid_argument";
+    } catch (const std::invalid_argument& e) {
+        EXPECT_NE(std::string(e.what()).find("."), std::string::npos);
+    }
+}
+
+// ---------- IRC forbidden chars ----------
+TEST(ValidateClientNameTest, ContainsAsterisk) {
+    EXPECT_THROW(validateClientName("user*name"), std::invalid_argument);
+}
+
+TEST(ValidateClientNameTest, ContainsExclamationMark) {
+    EXPECT_THROW(validateClientName("user!name"), std::invalid_argument);
+}
+
+TEST(ValidateClientNameTest, ContainsAtSignAnywhere) {
+    EXPECT_THROW(validateClientName("user@name"), std::invalid_argument);
+}
+
+// ---------- Soft rule: dot ----------
+TEST(ValidateClientNameTest, ContainsDotShouldBeDiscouraged) {
+    EXPECT_THROW(validateClientName("john.doe"), std::invalid_argument);
+}
