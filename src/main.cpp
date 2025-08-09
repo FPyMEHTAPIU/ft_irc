@@ -23,6 +23,7 @@ int main(int argc, char* argv[]) {
     try {
         Server server(port, password);
         server.start();
+		server.run();
         // server.run();
     } catch (const std::exception& e) {
         std::cerr << "Server error: " << e.what() << std::endl;
