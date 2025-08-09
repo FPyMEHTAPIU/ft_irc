@@ -1,0 +1,22 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup CMake build
+      run: cmake -S . -B build
+
+    - name: Build project and tests
+      run: cmake --build build --parallel
+
+    - name: Run tests
+      run: cd build && ctest --output-on-failure
