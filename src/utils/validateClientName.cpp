@@ -1,4 +1,8 @@
-#include "irc.hpp"
+#include "../irc.hpp"
+#include <string>
+#include <set>
+#include <algorithm>
+#include <cctype>
 
 static bool startsWith(std::string str, std::string symbols) {
   char firstChar = str[0];

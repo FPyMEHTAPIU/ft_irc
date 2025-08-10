@@ -1,7 +1,20 @@
 #include "Channel.hpp"
 #include "irc.hpp"
 
-Channel::Channel(std::string name, Client creator): _name("#" + name) {
+Channel::Channel(std::string name, Client creator) {
+  
+  if (name.empty())
+    throw std::invalid_argument("Channel name cannot be empty");
+    
+  if (name[0] != '#') {
+    name = "#" + name;
+  }
+  
+  if (!isValidChannelName(name)) {
+    throw std::invalid_argument("Invalid channel name: " + name);
+  }
+
+  _name = name;
   _operators.insert(creator);
   _topic = "";
   _isInviteOnly = false;

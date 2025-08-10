@@ -25,13 +25,13 @@ OBJ_DIR 		=	obj
 # 					$(addprefix $(CLEAN_DIR)/, $(CLEAN_FILES)) \
 # 					$(addprefix $(ERR_DIR)/, $(ERR_FILES)) \
 # 					$(addprefix $(UTILS_DIR)/, $(UTILS_FILES))
-SRC_FILES		=	main.cpp \
-		Channel.cpp \
-		Client.cpp \
-		Server.cpp \
-		parser/parser.cpp \
-		utils.cpp \
-		validation.cpp
+SRC_FILES	= main.cpp \
+		  Channel.cpp \
+		  Client.cpp \
+		  Server.cpp \
+		  parser/parser.cpp \
+		  utils/validateChannelName.cpp \
+		  utils/validateClientName.cpp
 
 SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 

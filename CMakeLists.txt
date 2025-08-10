@@ -15,16 +15,28 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
+include(GoogleTest)
 
+# Username test executable
 add_executable(
   username_test
   tests/username_test.cc
-  ../src/validation.cpp
+  ../src/utils/validateClientName.cpp
 )
 target_link_libraries(
-  username_test
+  username_test 
   GTest::gtest_main
 )
-
-include(GoogleTest)
 gtest_discover_tests(username_test)
+
+# Channel name test executable
+add_executable(
+  channelname_test
+  tests/channelname_test.cc
+  ../src/utils/validateChannelName.cpp
+)
+target_link_libraries(
+  channelname_test 
+  GTest::gtest_main
+)
+gtest_discover_tests(channelname_test)
