@@ -16,15 +16,20 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+# ---------- Username test executable ----------
 add_executable(
   username_test
   tests/username_test.cc
-  ../src/validation.cpp
+  ../src/utils/validation.cpp
 )
-target_link_libraries(
-  username_test
-  GTest::gtest_main
-)
-
-include(GoogleTest)
+target_link_libraries(username_test GTest::gtest_main)
 gtest_discover_tests(username_test)
+
+# ---------- Channel name test executable ----------
+add_executable(
+  channelname_test
+  tests/channelname_test.cc
+  ../src/utils/validation.cpp
+)
+target_link_libraries(channelname_test GTest::gtest_main)
+gtest_discover_tests(channelname_test)
