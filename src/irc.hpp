@@ -9,6 +9,6 @@ std::string generateRandomId();
 //parser.cpp
 int validateArgs(int argc, char **argv);
 
-//utils.cpp
+//utils/
 bool isValidChannelName(const std::string& name);
 void validateClientName(std::string name);

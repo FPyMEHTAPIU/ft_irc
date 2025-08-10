@@ -17,7 +17,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 include(GoogleTest)
 
-# ---------- Username test executable ----------
+# Username test executable
 add_executable(
   username_test
   tests/username_test.cc
@@ -29,7 +29,7 @@ target_link_libraries(
 )
 gtest_discover_tests(username_test)
 
-# ---------- Channel name test executable ----------
+# Channel name test executable
 add_executable(
   channelname_test
   tests/channelname_test.cc
