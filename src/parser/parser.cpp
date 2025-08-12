@@ -12,16 +12,21 @@ void validatePassword(const std::string& password) {
     }
 }
 
+int validatePort(std::string strPort) {
+    int port = std::stoi(strPort);
+    if (port <= 0 || port > 65535) {
+        throw std::out_of_range("Invalid port number. Must be between 1 and 65535.");
+    }
+
+    return port;
+}
+
 int validateArgs(int argc, char **argv) {
 	if (argc != 3) {
         throw std::invalid_argument("Usage: ./ircserv <port> <password>");
     }
 
-	int port = std::atoi(argv[1]);
-    if (port <= 0 || port > 65535) {
-        throw std::out_of_range("Invalid port number. Must be between 1 and 65535.");
-    }
-
+	int port = validatePort(argv[1]);
     validatePassword(argv[2]);
 	
 	return port;

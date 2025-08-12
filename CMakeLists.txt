@@ -52,3 +52,15 @@ target_link_libraries(
   GTest::gtest_main
 )
 gtest_discover_tests(password_test)
+
+# Port test executable
+add_executable(
+  port_test
+  tests/port_test.cc
+  ../src/parser/parser.cpp
+)
+target_link_libraries(
+  port_test 
+  GTest::gtest_main
+)
+gtest_discover_tests(port_test)

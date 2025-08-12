@@ -10,6 +10,7 @@
 //parser.cpp
 void validatePassword(const std::string& password);
 int validateArgs(int argc, char **argv);
+int validatePort(std::string strPort);
 
 //utils/
 bool isValidChannelName(const std::string& name);
