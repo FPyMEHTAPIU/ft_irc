@@ -4,9 +4,11 @@
 #define ANSI_RED "\033[0;91m"
 #define ANSI_RESET "\033[0;39m"
 
-std::string generateRandomId();
+#define PWD_MIN_LENGTH 5
+#define PWD_MAX_LENGTH 32
 
 //parser.cpp
+void validatePassword(const std::string& password);
 int validateArgs(int argc, char **argv);
 
 //utils/
