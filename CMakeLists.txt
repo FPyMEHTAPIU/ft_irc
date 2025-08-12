@@ -40,3 +40,15 @@ target_link_libraries(
   GTest::gtest_main
 )
 gtest_discover_tests(channelname_test)
+
+# Password test executable
+add_executable(
+  password_test
+  tests/password_test.cc
+  ../src/parser/parser.cpp
+)
+target_link_libraries(
+  password_test 
+  GTest::gtest_main
+)
+gtest_discover_tests(password_test)
