@@ -2,6 +2,8 @@
 #include <iostream>
 #include <set>
 #include <vector>
+#include <memory>
+#include <algorithm>
 #include "Server.hpp"
 #include "client/Client.hpp"
 #include "channel/Channel.hpp"
