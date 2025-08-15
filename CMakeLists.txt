@@ -64,3 +64,15 @@ target_link_libraries(
   GTest::gtest_main
 )
 gtest_discover_tests(port_test)
+
+# Command test executable
+add_executable(
+  command_test
+  tests/command_test.cc
+  ../src/parser/parser.cpp
+)
+target_link_libraries(
+  command_test 
+  GTest::gtest_main
+)
+gtest_discover_tests(command_test)

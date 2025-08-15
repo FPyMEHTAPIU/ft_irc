@@ -12,7 +12,7 @@ void validatePassword(const std::string& password) {
     }
 }
 
-int validatePort(std::string strPort) {
+int validatePort(const std::string& strPort) {
     int port = std::stoi(strPort);
     if (port <= 0 || port > 65535) {
         throw std::out_of_range("Invalid port number. Must be between 1 and 65535.");
@@ -30,4 +30,21 @@ int validateArgs(int argc, char **argv) {
     validatePassword(argv[2]);
 	
 	return port;
+}
+
+void validateCommand(const std::string& command) {
+    const std::set<std::string> cmds = {
+        "pass", "nick", "user", "join", "part", "privmsg", "notice",
+        "mode", "invite", "kick", "topic", "names", "list", "oper",
+        "kill", "quit"
+    };
+
+    std::string cmdLowercase(command.size(), '\0');
+    std::transform(command.begin(), command.end(), 
+        cmdLowercase.begin(), ::tolower);
+
+    for (const std::string& cmd: cmds) {
+        if (cmd == cmdLowercase) return;
+    }
+    throw std::invalid_argument("Invalid command: " + command);
 }
