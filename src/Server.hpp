@@ -43,7 +43,6 @@ public:
   Server(int port, std::string password);
   ~Server();
 
-  // Socket operations
   void start();
   void run();
   void stop();

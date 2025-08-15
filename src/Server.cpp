@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "Logger.hpp"
 #include <stdexcept>
 #include <cstring>
 #include <cerrno>
@@ -198,6 +199,7 @@ void Server::acceptNewClient()
 
     std::cout << "New client connected: FD " << clientSocket
               << " from " << inet_ntoa(clientAddr.sin_addr) << std::endl;
+    send(clientSocket, "Welcome to our IRC server!\n", 29, 0);
 }
 
 void Server::handleClientData(int clientFd)
@@ -221,6 +223,7 @@ void Server::handleClientData(int clientFd)
         removeClient(clientFd);
         return;
     }
+
     buffer[bytesRead] = '\0';
     std::cout << "Received from client fd " << clientFd << ": " << buffer;
 
