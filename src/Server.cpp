@@ -20,7 +20,7 @@ Server::~Server()
     stop();
 }
 
-std::set<Channel> Server::getChannels() const
+std::set<std::shared_ptr<Channel>> Server::getChannels() const
 {
     return _channels;
 }
@@ -30,7 +30,7 @@ std::set<Client> Server::getClients() const
     return _clients;
 }
 
-void Server::addChannel(Channel channel)
+void Server::addChannel(std::shared_ptr<Channel> channel)
 {
     _channels.insert(channel);
 }
@@ -188,6 +188,7 @@ void Server::handleClientData(int clientFd)
     std::cout << "Received from client fd " << clientFd << ": " << buffer;
 
     // handle command here
+    handleInput(buffer, this);
 
     // just echo back for now
     std::string response = "Echo: " + std::string(buffer);

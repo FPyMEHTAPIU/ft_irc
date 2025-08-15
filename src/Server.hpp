@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "channel/Channel.hpp"
 #include "client/Client.hpp"
+#include "irc.hpp"
 
 #define SERVER_BACKLOG 10 // max number of pending connections
 #ifndef SOCK_NONBLOCK
@@ -24,7 +25,7 @@ private:
   bool _status;
   const std::string _PASSWORD;
 
-  std::set<Channel> _channels;
+  std::set<std::shared_ptr<Channel>> _channels;
   std::set<Client> _clients;
 
   int _serverSocket;
@@ -50,8 +51,8 @@ public:
   void handleClientData(int clientFd);
   void removeClient(int clientFd);
 
-  std::set<Channel> getChannels() const;
+  std::set<std::shared_ptr<Channel>> getChannels() const;
   std::set<Client> getClients() const;
-  void addChannel(Channel channel);
+  void addChannel(std::shared_ptr<Channel> channel);
   void addClient(Client client);
 };
