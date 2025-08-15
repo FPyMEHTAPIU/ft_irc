@@ -6,9 +6,15 @@ void handleInput(const std::string &input, Server *server)
 		return;
 
 	std::vector<std::string> args = split(input, ' ');
+	std::cout << "args: ";
+	for (auto &arg : args)
+	{
+		std::cout << arg << " ";
+	}
+	std::cout << std::endl;
 	validateCommand(args[0]);
 
-	switch (hash(input.c_str(), input.size()))
+	switch (hash(args[0].c_str(), args[0].size()))
 	{
 	case hash("pass"):
 		break;
@@ -21,12 +27,12 @@ void handleInput(const std::string &input, Server *server)
 		std::cout << "privet" << std::endl;
 		return;
 		auto it = std::find_if(
-				server->getChannels().begin(),
-				server->getChannels().end(),
-				[&](const std::shared_ptr<Channel> &ch)
-				{
-					return ch->getName() == args[1];
-				});
+			server->getChannels().begin(),
+			server->getChannels().end(),
+			[&](const std::shared_ptr<Channel> &ch)
+			{
+				return ch->getName() == args[1];
+			});
 
 		if (it == server->getChannels().end())
 		{
@@ -62,6 +68,7 @@ void handleInput(const std::string &input, Server *server)
 	case hash("msg"):
 		break;
 	default:
+		std::cout << "default" << std::endl;
 		break;
 	}
 }
