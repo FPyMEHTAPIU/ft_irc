@@ -17,21 +17,29 @@ OBJ_DIR 		=	obj
 
 UTILS_DIR = utils
 PARSER_DIR = parser
+CHANNEL_DIR = channel
+CLIENT_DIR = client
+
+CHANNEL_FILES = \
+	Channel.cpp
+
+CLIENT_FILES = \
+	Client.cpp
+
+PARSER_FILES = \
+	parser.cpp
 
 UTILS_FILES = \
 	validateChannelName.cpp \
 	validateClientName.cpp
 
-PARSER_FILES = \
-	parser.cpp
-
 SRC_FILES = \
-	$(addprefix $(UTILS_DIR)/, $(UTILS_FILES)) \
+	$(addprefix $(CHANNEL_DIR)/, $(CHANNEL_FILES)) \
+	$(addprefix $(CLIENT_DIR)/, $(CLIENT_FILES)) \
 	$(addprefix $(PARSER_DIR)/, $(PARSER_FILES)) \
-	main.cpp \
-	Channel.cpp \
-	Client.cpp \
-	Server.cpp
+	$(addprefix $(UTILS_DIR)/, $(UTILS_FILES)) \
+	Server.cpp \
+	main.cpp
 
 SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
