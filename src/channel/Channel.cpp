@@ -1,5 +1,5 @@
 #include "Channel.hpp"
-#include "irc.hpp"
+#include "../irc.hpp"
 
 Channel::Channel(std::string name, Client creator) {
   

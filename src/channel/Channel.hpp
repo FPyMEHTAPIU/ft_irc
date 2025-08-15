@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <set>
-#include "Client.hpp"
+#include "../client/Client.hpp"
 
 class Client;
 

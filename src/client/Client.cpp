@@ -1,5 +1,5 @@
 #include "Client.hpp"
-#include "irc.hpp"
+#include "../irc.hpp"
 
 Client::Client(std::string name): _nickname(name) {}
 
