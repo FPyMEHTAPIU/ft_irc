@@ -18,6 +18,7 @@ TEST(ValidateCommandTest, AcceptsAllValidCommandsLowercase) {
     EXPECT_NO_THROW(validateCommand("oper"));
     EXPECT_NO_THROW(validateCommand("kill"));
     EXPECT_NO_THROW(validateCommand("quit"));
+    EXPECT_NO_THROW(validateCommand("msg"));
 }
 
 TEST(ValidateCommandTest, AcceptsAllValidCommandsUppercase) {
@@ -37,6 +38,7 @@ TEST(ValidateCommandTest, AcceptsAllValidCommandsUppercase) {
     EXPECT_NO_THROW(validateCommand("OPER"));
     EXPECT_NO_THROW(validateCommand("KILL"));
     EXPECT_NO_THROW(validateCommand("QUIT"));
+    EXPECT_NO_THROW(validateCommand("MSG"));
 }
 
 TEST(ValidateCommandTest, AcceptsAllValidCommandsMixedCase) {
@@ -56,6 +58,7 @@ TEST(ValidateCommandTest, AcceptsAllValidCommandsMixedCase) {
     EXPECT_NO_THROW(validateCommand("OpEr"));
     EXPECT_NO_THROW(validateCommand("KiLl"));
     EXPECT_NO_THROW(validateCommand("QuIt"));
+    EXPECT_NO_THROW(validateCommand("MsG"));
 }
 
 TEST(ValidateCommandTest, RejectsInvalidStrings) {

@@ -1,16 +1,19 @@
 #include "Channel.hpp"
 #include "../irc.hpp"
 
-Channel::Channel(std::string name, Client creator) {
-  
+Channel::Channel(std::string name, Client creator)
+{
+
   if (name.empty())
     throw std::invalid_argument("Channel name cannot be empty");
-    
-  if (name[0] != '#') {
+
+  if (name[0] != '#')
+  {
     name = "#" + name;
   }
-  
-  if (!isValidChannelName(name)) {
+
+  if (!isValidChannelName(name))
+  {
     throw std::invalid_argument("Invalid channel name: " + name);
   }
 
@@ -24,67 +27,84 @@ Channel::Channel(std::string name, Client creator) {
 
 Channel::~Channel() {}
 
-bool Channel::operator<(Channel const& channel) const {
+bool Channel::operator<(Channel const &channel) const
+{
   return _name < channel._name;
 }
 
-std::set<Client> Channel::getUsers() const {
+std::set<Client> Channel::getUsers() const
+{
   return _users;
 }
 
-std::set<Client> Channel::getOperators() const {
+std::set<Client> Channel::getOperators() const
+{
   return _operators;
 }
 
-std::string Channel::getName() const {
+std::string Channel::getName() const
+{
   return _name;
 }
 
-std::string Channel::getTopic() const {
+std::string Channel::getTopic() const
+{
   return _topic;
 }
 
-bool Channel::getIsInviteOnly() const {
+bool Channel::getIsInviteOnly() const
+{
   return _isInviteOnly;
 }
 
-bool Channel::getIsTopicChangeMode() const {
+bool Channel::getIsTopicChangeMode() const
+{
   return _isTopicChangeMode;
 }
 
-size_t Channel::getUserLimit() const {
+size_t Channel::getUserLimit() const
+{
   return _userLimit;
 }
 
-void Channel::setName(std::string newName) {
+void Channel::setName(std::string newName)
+{
   _name = newName;
 }
 
-void Channel::setTopic(std::string newTopic) {
-  if (_isTopicChangeMode) {
+void Channel::setTopic(std::string newTopic)
+{
+  if (_isTopicChangeMode)
+  {
     _topic = newTopic;
   }
-  else {
+  else
+  {
     std::cout << "Topic is in readonly mode!" << std::endl;
   }
 }
 
-void Channel::addUser(Client newUser) {
+void Channel::addUser(Client newUser)
+{
   _users.insert(newUser);
 }
 
-void Channel::addOperator(Client newOperator) {
+void Channel::addOperator(Client newOperator)
+{
   _operators.insert(newOperator);
 }
 
-void Channel::setIsInviteOnly(bool newMode) {
+void Channel::setIsInviteOnly(bool newMode)
+{
   _isInviteOnly = newMode;
 }
 
-void Channel::setIsTopicChangeMode(bool newMode) {
+void Channel::setIsTopicChangeMode(bool newMode)
+{
   _isTopicChangeMode = newMode;
 }
 
-void Channel::setUserLimit(int newLimit) {
+void Channel::setUserLimit(int newLimit)
+{
   _userLimit = newLimit;
 }
