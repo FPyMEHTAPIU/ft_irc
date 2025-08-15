@@ -15,23 +15,23 @@ NAME = ircserv
 SRC_DIR 		=	src
 OBJ_DIR 		=	obj
 
-# Source files - put there
-# PARS_FILES		=	file_validation.c
+UTILS_DIR = utils
+PARSER_DIR = parser
 
-# SRC_FILES		=	$(addprefix $(PARS_DIR)/, $(PARS_FILES)) \
-# 					$(addprefix $(DRAWING_DIR)/, $(DRAWING_FILES)) \
-# 					$(addprefix $(RAYS_DIR)/, $(RAYS_FILES)) \
-# 					$(addprefix $(CONTROLS_DIR)/, $(CONTROLS_FILES)) \
-# 					$(addprefix $(CLEAN_DIR)/, $(CLEAN_FILES)) \
-# 					$(addprefix $(ERR_DIR)/, $(ERR_FILES)) \
-# 					$(addprefix $(UTILS_DIR)/, $(UTILS_FILES))
-SRC_FILES	= main.cpp \
-		  Channel.cpp \
-		  Client.cpp \
-		  Server.cpp \
-		  parser/parser.cpp \
-		  utils/validateChannelName.cpp \
-		  utils/validateClientName.cpp
+UTILS_FILES = \
+	validateChannelName.cpp \
+	validateClientName.cpp
+
+PARSER_FILES = \
+	parser.cpp
+
+SRC_FILES = \
+	$(addprefix $(UTILS_DIR)/, $(UTILS_FILES)) \
+	$(addprefix $(PARSER_DIR)/, $(PARSER_FILES)) \
+	main.cpp \
+	Channel.cpp \
+	Client.cpp \
+	Server.cpp
 
 SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
