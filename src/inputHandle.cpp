@@ -18,6 +18,15 @@ std::string handleInput(const std::string &input, Server *server, int clientFd)
 	}
 	std::cout << std::endl;
 
+	if (args[0].starts_with('/'))
+	{
+		args[0].erase(args[0].begin());
+	}
+	else
+	{
+		throw new std::invalid_argument("The command must start from '/'");
+	}
+
 	std::string cmdLowercase(args[0].size(), '\0');
 	std::transform(args[0].begin(), args[0].end(),
 				   cmdLowercase.begin(), ::tolower);
