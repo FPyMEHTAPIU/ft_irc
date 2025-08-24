@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <set>
+#include <map>
 #include <vector>
 #include <poll.h>
 #include <sys/socket.h>
@@ -26,7 +27,7 @@ private:
   const std::string _PASSWORD;
 
   std::set<std::shared_ptr<Channel>> _channels;
-  std::set<Client> _clients;
+  std::map<int, Client> _clients;
 
   int _serverSocket;
   struct sockaddr_in _serverAddr;
@@ -49,10 +50,12 @@ public:
 
   void acceptNewClient();
   void handleClientData(int clientFd);
+  void handleClientWrite(int fd);
   void removeClient(int clientFd);
 
   std::set<std::shared_ptr<Channel>> getChannels() const;
-  std::set<Client> getClients() const;
+  std::map<int, Client> getClients() const;
+  std::vector<struct pollfd> getPollFds() const;
   void addChannel(std::shared_ptr<Channel> channel);
-  void addClient(Client client);
+  void addClient(int fd, Client client);
 };

@@ -27,7 +27,7 @@ void validateCommand(const std::string &command);
 bool isValidChannelName(const std::string &name);
 std::vector<std::string> split(std::string sentence, char sep);
 
-void handleInput(const std::string &input, Server *server);
+std::string handleInput(const std::string &input, Server *server, int clientFd);
 
 // These `hash` fucntions are for using `std::string` in `switch`
 constexpr uint32_t hash(const char *data, size_t size) noexcept

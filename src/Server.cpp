@@ -25,9 +25,14 @@ std::set<std::shared_ptr<Channel>> Server::getChannels() const
     return _channels;
 }
 
-std::set<Client> Server::getClients() const
+std::map<int, Client> Server::getClients() const
 {
     return _clients;
+}
+
+std::vector<struct pollfd> Server::getPollFds() const
+{
+    return _pollFds;
 }
 
 void Server::addChannel(std::shared_ptr<Channel> channel)
@@ -35,9 +40,9 @@ void Server::addChannel(std::shared_ptr<Channel> channel)
     _channels.insert(channel);
 }
 
-void Server::addClient(Client client)
+void Server::addClient(int fd, Client client)
 {
-    _clients.insert(client);
+    _clients.insert({fd, client});
 }
 
 // Private socket methods
@@ -118,6 +123,11 @@ void Server::run()
                     handleClientData(_pollFds[i].fd);
             }
 
+            if (_pollFds[i].revents & POLLOUT)
+            {
+                handleClientWrite(_pollFds[i].fd);
+            }
+
             // handle disconnections here
             // POLLHUP - Poll Hang Up -  client pressed ctrl+c or closed irc client
             // POLLERR - Poll Error - socket error occurred
@@ -137,31 +147,32 @@ void Server::run()
 
 void Server::acceptNewClient()
 {
-    struct sockaddr_in clientAddr;                // needed for accept()
-    socklen_t clientAddrLen = sizeof(clientAddr); // needed for accept()
+    struct sockaddr_in clientAddr;
+    socklen_t clientAddrLen = sizeof(clientAddr);
 
-    // accept the pending connection
     int clientSocket = accept(_serverSocket, (struct sockaddr *)&clientAddr, &clientAddrLen);
-
     if (clientSocket < 0)
     {
         if (errno != EWOULDBLOCK && errno != EAGAIN)
-        {
-            std::cerr << "Failed to accept client: " << strerror(errno) << std::endl; // real error
-        }
-        return; // If it was EWOULDBLOCK/EAGAIN, just return
+            std::cerr << "Failed to accept client: " << strerror(errno) << std::endl;
+        return;
     }
 
-    // Add client to poll monitoring
+    // Добавляем в poll
     struct pollfd clientPoll;
     clientPoll.fd = clientSocket;
     clientPoll.events = POLLIN;
     clientPoll.revents = 0;
     _pollFds.push_back(clientPoll);
 
+    // Создаём объект Client и добавляем в map
+    Client newClient(clientSocket);
+    addClient(clientSocket, newClient); // _clients[clientSocket] = newClient;
+
     std::cout << "New client connected: FD " << clientSocket
               << " from " << inet_ntoa(clientAddr.sin_addr) << std::endl;
 }
+
 
 void Server::handleClientData(int clientFd)
 {
@@ -188,11 +199,51 @@ void Server::handleClientData(int clientFd)
     std::cout << "Received from client fd " << clientFd << ": " << buffer;
 
     // handle command here
-    handleInput(buffer, this);
+    std::string response = handleInput(buffer, this, clientFd);
 
     // just echo back for now
-    std::string response = "Echo: " + std::string(buffer);
+    // std::string response = "Echo: " + std::string(buffer);
     send(clientFd, response.c_str(), response.length(), 0);
+}
+
+void Server::handleClientWrite(int fd)
+{
+    Client &client = _clients.at(fd);
+
+    if (!client.hasPendingMessages())
+    {
+        for (size_t i = 0; i < _pollFds.size(); ++i)
+        {
+            if (_pollFds[i].fd == fd)
+            {
+                _pollFds[i].events &= ~POLLOUT; // убираем запись
+                break;
+            }
+        }
+        return;
+    }
+
+    std::string &msg = client.frontMessage();
+    ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
+
+    if (sent < 0)
+    {
+        if (errno != EWOULDBLOCK && errno != EAGAIN)
+        {
+            std::cerr << "Send error on fd " << fd << ": " << strerror(errno) << "\n";
+            removeClient(fd);
+        }
+        return;
+    }
+
+    if ((size_t)sent == msg.size())
+    {
+        client.popMessage();
+    }
+    else
+    {
+        msg.erase(0, sent); // удалить уже отправленную часть
+    }
 }
 
 void Server::removeClient(int clientFd)

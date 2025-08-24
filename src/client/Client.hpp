@@ -1,18 +1,73 @@
 #pragma once
 #include <iostream>
+#include <deque>
+#include <string>
 
 class Client
 {
 private:
-  std::string _nickname;
+  int _fd;
+  std::string _nick;
+  std::string _username;
+  std::string _realname;
+  std::deque<std::string> _writeQueue;
+  bool registered;
+
+  void checkRegistration()
+  {
+    registered = (!_nick.empty() && !_username.empty());
+  }
 
 public:
-  Client() = delete;
-  Client &operator=(Client const &client) = delete;
-  Client(std::string name);
-  ~Client();
-  bool operator<(Client const &client) const;
+  // Конструктор для нового клиента с fd
+  Client(int fd)
+      : _fd(fd), _nick(""), _username(""), _realname(""), registered(false) {}
 
-  std::string getName() const;
-  void setName(std::string newName);
+  // Конструктор с fd и ником
+  Client(int fd, const std::string &nick)
+      : _fd(fd), _nick(nick), _username(""), _realname(""), registered(false)
+  {
+    checkRegistration();
+  }
+
+  // Конструктор с fd, ником и username/realname
+  Client(int fd, const std::string &nick, const std::string &user, const std::string &real)
+      : _fd(fd), _nick(nick), _username(user), _realname(real), registered(false)
+  {
+    checkRegistration();
+  }
+
+  // Удаляем оператор присваивания
+  Client &operator=(Client const &client) = delete;
+
+  ~Client() {}
+
+  bool operator<(Client const &client) const
+  {
+    return _fd < client._fd;
+  }
+
+  // --- Методы доступа ---
+  std::string getNick() const { return _nick; }
+  void setNick(const std::string &newNick)
+  {
+    _nick = newNick;
+    checkRegistration();
+  }
+
+  void setUser(const std::string &user, const std::string &real)
+  {
+    _username = user;
+    _realname = real;
+    checkRegistration();
+  }
+
+  int getFd() const { return _fd; }
+
+  void enqueueMessage(const std::string &msg) { _writeQueue.push_back(msg); }
+  bool hasPendingMessages() const { return !_writeQueue.empty(); }
+  std::string &frontMessage() { return _writeQueue.front(); }
+  void popMessage() { _writeQueue.pop_front(); }
+
+  bool isRegistered() const { return registered; }
 };

@@ -45,7 +45,7 @@ void validateCommand(const std::string &command)
     const std::set<std::string> cmds = {
         "pass", "nick", "user", "join", "part", "privmsg", "notice",
         "mode", "invite", "kick", "topic", "names", "list", "oper",
-        "kill", "quit", "msg"};
+        "kill", "quit", "msg", "cap"};
 
     std::string cmdLowercase(command.size(), '\0');
     std::transform(command.begin(), command.end(),
