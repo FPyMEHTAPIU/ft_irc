@@ -15,16 +15,22 @@ NAME = ircserv
 SRC_DIR 		=	src
 OBJ_DIR 		=	obj
 
-UTILS_DIR = utils
-PARSER_DIR = parser
 CHANNEL_DIR = channel
 CLIENT_DIR = client
+COMMANDS_DIR = commands
+PARSER_DIR = parser
+UTILS_DIR = utils
 
 CHANNEL_FILES = \
 	Channel.cpp
 
 CLIENT_FILES = \
 	Client.cpp
+
+COMMANDS_FILES = \
+	join.cpp \
+	nick.cpp \
+	user.cpp
 
 PARSER_FILES = \
 	parser.cpp
@@ -37,6 +43,7 @@ UTILS_FILES = \
 SRC_FILES = \
 	$(addprefix $(CHANNEL_DIR)/, $(CHANNEL_FILES)) \
 	$(addprefix $(CLIENT_DIR)/, $(CLIENT_FILES)) \
+	$(addprefix $(COMMANDS_DIR)/, $(COMMANDS_FILES)) \
 	$(addprefix $(PARSER_DIR)/, $(PARSER_FILES)) \
 	$(addprefix $(UTILS_DIR)/, $(UTILS_FILES)) \
 	Server.cpp \

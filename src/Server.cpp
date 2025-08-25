@@ -158,16 +158,14 @@ void Server::acceptNewClient()
         return;
     }
 
-    // Добавляем в poll
     struct pollfd clientPoll;
     clientPoll.fd = clientSocket;
     clientPoll.events = POLLIN;
     clientPoll.revents = 0;
     _pollFds.push_back(clientPoll);
 
-    // Создаём объект Client и добавляем в map
     Client newClient(clientSocket);
-    addClient(clientSocket, newClient); // _clients[clientSocket] = newClient;
+    addClient(clientSocket, newClient);
 
     std::cout << "New client connected: FD " << clientSocket
               << " from " << inet_ntoa(clientAddr.sin_addr) << std::endl;
@@ -216,7 +214,7 @@ void Server::handleClientWrite(int fd)
         {
             if (_pollFds[i].fd == fd)
             {
-                _pollFds[i].events &= ~POLLOUT; // убираем запись
+                _pollFds[i].events &= ~POLLOUT; 
                 break;
             }
         }
@@ -242,7 +240,7 @@ void Server::handleClientWrite(int fd)
     }
     else
     {
-        msg.erase(0, sent); // удалить уже отправленную часть
+        msg.erase(0, sent);
     }
 }
 

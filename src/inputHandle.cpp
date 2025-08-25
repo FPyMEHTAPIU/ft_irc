@@ -1,4 +1,5 @@
 #include "irc.hpp"
+#include "commands/commands.hpp"
 
 std::string handleInput(const std::string &input, Server *server, int clientFd)
 {
@@ -22,10 +23,11 @@ std::string handleInput(const std::string &input, Server *server, int clientFd)
 	{
 		args[0].erase(args[0].begin());
 	}
-	else
-	{
-		throw new std::invalid_argument("The command must start from '/'");
-	}
+	// else
+	// {
+	// 	std::cout << "hui\n";
+	// 	throw std::invalid_argument("The command must start from '/'");
+	// }
 
 	std::string cmdLowercase(args[0].size(), '\0');
 	std::transform(args[0].begin(), args[0].end(),
@@ -40,44 +42,14 @@ std::string handleInput(const std::string &input, Server *server, int clientFd)
 	case hash("pass"):
 		break;
 	case hash("nick"):
-		client.setNick(args[1]);
-		result = ":" + client.getNick() + " NICK registered\r\n";
+		result = handleNick(client, args[1]);
 		break;
 
 	case hash("user"):
-		client.setUser(args[1], args[4].substr(1)); // отбрасываем ':'
-		if (client.isRegistered())
-		{
-			result = ":ircserv 001 " + client.getNick() + " :Welcome to the IRC network\r\n";
-			result += ":ircserv 002 " + client.getNick() + " :Your host is ircserv\r\n";
-		}
+		result = handleUser(client, args);
 		break;
 	case hash("join"):
-	{
-		if (args.size() < 2)
-		{
-			result = "461 JOIN :Not enough parameters\r\n";
-			break;
-		}
-
-		auto it = std::find_if(
-			server->getChannels().begin(),
-			server->getChannels().end(),
-			[&](const std::shared_ptr<Channel> &ch)
-			{
-				return ch->getName() == args[1];
-			});
-
-		if (it == server->getChannels().end())
-		{
-			auto itClient = server->getClients().begin();
-			std::shared_ptr<Channel> newChannel = std::make_shared<Channel>(
-				args[1], itClient->second);
-			server->addChannel(newChannel);
-		}
-		result = ":" + client.getNick() + " JOIN " + args[1] + "\r\n";
-	}
-	break;
+		result = handleJoin(server, args, client);
 		break;
 	case hash("part"):
 		break;
