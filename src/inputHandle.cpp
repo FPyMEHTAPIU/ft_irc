@@ -3,80 +3,50 @@
 
 std::string handleInput(const std::string &input, Server *server, int clientFd)
 {
-	std::string result = "";
-
 	if (input.empty())
-	{
-		result = "Empty command provided";
-		return result;
-	}
+		return "Empty command provided\r\n";
 
 	std::vector<std::string> args = split(input, ' ');
-	std::cout << "args: ";
-	for (auto &arg : args)
-	{
-		std::cout << arg << " ";
-	}
-	std::cout << std::endl;
+	if (args.empty())
+		return "";
 
 	if (args[0].starts_with('/'))
 	{
 		args[0].erase(args[0].begin());
 	}
-	// else
-	// {
-	// 	std::cout << "hui\n";
-	// 	throw std::invalid_argument("The command must start from '/'");
-	// }
 
 	std::string cmdLowercase(args[0].size(), '\0');
 	std::transform(args[0].begin(), args[0].end(),
-				   cmdLowercase.begin(), ::tolower);
+								 cmdLowercase.begin(),
+								 [](unsigned char c)
+								 { return std::tolower(c); });
 
 	validateCommand(cmdLowercase);
 
 	Client &client = server->getClients().at(clientFd);
+	std::string result = "";
 
 	switch (hash(cmdLowercase.c_str(), cmdLowercase.size()))
 	{
-	case hash("pass"):
-		break;
 	case hash("nick"):
-		result = handleNick(client, args[1]);
+		if (args.size() < 2)
+			result = "431 :No nickname given\r\n";
+		else
+			result = handleNick(client, args[1]);
 		break;
 
 	case hash("user"):
-		result = handleUser(client, args);
+		if (args.size() < 5) // RFC requires 4 params
+			result = "461 USER :Not enough parameters\r\n";
+		else
+			result = handleUser(client, args);
 		break;
+
 	case hash("join"):
+		std::cout << "joining..." << args[1] << std::endl;
 		result = handleJoin(server, args, client);
 		break;
-	case hash("part"):
-		break;
-	case hash("privmsg"):
-		break;
-	case hash("notice"):
-		break;
-	case hash("mode"):
-		break;
-	case hash("invite"):
-		break;
-	case hash("kick"):
-		break;
-	case hash("topic"):
-		break;
-	case hash("names"):
-		break;
-	case hash("list"):
-		break;
-	case hash("oper"):
-		break;
-	case hash("kill"):
-		break;
-	case hash("quit"):
-		break;
-	case hash("msg"):
-		break;
+
 	case hash("cap"):
 	{
 		if (args.size() < 2)
@@ -85,25 +55,36 @@ std::string handleInput(const std::string &input, Server *server, int clientFd)
 		}
 		else
 		{
-			std::string secondArgLower;
-			secondArgLower.resize(args[1].size());
-			std::transform(args[1].begin(), args[1].end(), secondArgLower.begin(), ::tolower);
+			std::string sub = args[1];
+			std::transform(sub.begin(), sub.end(), sub.begin(), ::tolower);
 
-			if (secondArgLower == "ls")
+			if (sub == "ls")
 			{
-				result = ":ircserv CAP " + client.getNick() + " LS :multi-prefix\r\n";
+				// Use * if client has no nickname yet
+				std::string nick = client.getNick().empty() ? "*" : client.getNick();
+				result = ":ircserv CAP " + nick + " LS :multi-prefix\r\n";
 			}
-			else if (secondArgLower == "end")
+			else if (sub == "req")
 			{
-				result = ""; // ничего, регистрация может продолжиться
+				if (args.size() >= 3)
+				{
+					std::string capName = args[2];
+					std::string nick = client.getNick().empty() ? "*" : client.getNick();
+					result = ":ircserv CAP " + nick + " ACK :" + capName + "\r\n";
+				}
+			}
+			else if (sub == "end")
+			{
+				result = "";
 			}
 		}
 	}
 	break;
+
 	default:
-		result = "Command not found" + input;
-		std::cout << "default" << std::endl;
+		result = "421 " + args[0] + " :Unknown command\r\n";
 		break;
 	}
+
 	return result;
 }

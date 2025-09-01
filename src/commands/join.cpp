@@ -1,35 +1,31 @@
 #include "commands.hpp"
 
-std::string handleJoin(Server *server, const std::vector<std::string> &args, const Client &client)
+std::string handleJoin(Server *server, const std::vector<std::string> &args, Client &client)
 {
-	std::string result = "";
-	if (args.size() < 2)
-	{
-		result = "461 JOIN :Not enough parameters\r\n";
-		return result;
-	}
+	// Check registration
+	if (!client.isRegistered())
+		return "451 JOIN :You have not registered\r\n";
 
-	auto it = std::find_if(
-		server->getChannels().begin(),
-		server->getChannels().end(),
-		[&](const std::shared_ptr<Channel> &ch)
-		{
-			return ch->getName() == args[1];
-		});
+	// Require channel name
+	if (args.size() < 2 || args[1].empty())
+		return "461 JOIN :Not enough parameters\r\n";
 
-	if (it == server->getChannels().end())
+	std::string channelName = args[1];
+
+	auto &channels = server->getChannels();
+	auto it = channels.find(channelName);
+
+	if (it == channels.end())
 	{
 		// Create the channel and add the client
-		std::shared_ptr<Channel> newChannel = std::make_shared<Channel>(
-			args[1], client);
-		server->addChannel(newChannel);
+		std::shared_ptr<Channel> newChannel = std::make_shared<Channel>(channelName, client);
+		server->addChannel(channelName, newChannel);
 	}
 	else
 	{
-		// The channel exists, add a new client
-		(*it)->addUser(client);
+		it->second->addUser(client); // <- access the shared_ptr via .second
 	}
 
-	result = ":" + client.getNick() + " JOIN " + args[1] + "\r\n";
-	return result;
+	// Only send a proper JOIN message once
+	return ":" + client.getNick() + " JOIN " + channelName + "\r\n";
 }
