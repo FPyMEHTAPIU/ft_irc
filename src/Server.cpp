@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 #include <algorithm> // for std::find_if
+#include <sys/fcntl.h>
 
 Server::Server(int port, std::string password) : _PORT(port), _status(false), _PASSWORD(password), _serverSocket(-1)
 {
@@ -20,12 +21,23 @@ Server::~Server()
     stop();
 }
 
-std::set<std::shared_ptr<Channel>> Server::getChannels() const
+// In Server.cpp
+std::map<std::string, std::shared_ptr<Channel>> &Server::getChannels()
 {
     return _channels;
 }
 
-std::map<int, Client> Server::getClients() const
+const std::map<std::string, std::shared_ptr<Channel>> &Server::getChannels() const
+{
+    return _channels;
+}
+
+const std::map<int, Client> &Server::getClients() const
+{
+    return _clients;
+}
+
+std::map<int, Client> &Server::getClients()
 {
     return _clients;
 }
@@ -35,9 +47,9 @@ std::vector<struct pollfd> Server::getPollFds() const
     return _pollFds;
 }
 
-void Server::addChannel(std::shared_ptr<Channel> channel)
+void Server::addChannel(const std::string &channelName, std::shared_ptr<Channel> channel)
 {
-    _channels.insert(channel);
+    _channels.insert({channelName, channel});
 }
 
 void Server::addClient(int fd, Client client)
@@ -49,7 +61,7 @@ void Server::addClient(int fd, Client client)
 void Server::setupSocket()
 {
     // Create socket with SOCK_NONBLOCK
-    _serverSocket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    _serverSocket = socket(AF_INET, SOCK_STREAM, 0); // | SOCK_NONBLOCK, 0); commented for MacOS, doesn't work with nonblock
 
     if (_serverSocket == -1)
         throw std::runtime_error("Failed to create socket: " + std::string(strerror(errno)));
@@ -102,9 +114,9 @@ void Server::run()
     std::cout << "IRC Server is running..." << std::endl;
     _status = true;
 
-    while (_status == true)
+    while (_status)
     {
-        int pollRes = poll(_pollFds.data(), _pollFds.size(), 1000); // tick 1000ms
+        int pollRes = poll(_pollFds.data(), _pollFds.size(), 1000); // 1-second tick
 
         if (pollRes < 0)
             throw std::runtime_error("Poll failed: " + std::string(strerror(errno)));
@@ -114,32 +126,44 @@ void Server::run()
         size_t i = 0;
         while (i < _pollFds.size())
         {
-            // POOLIN - this means data is available to read
-            if (_pollFds[i].revents & POLLIN)
+            struct pollfd &pfd = _pollFds[i];
+
+            // Handle incoming data
+            if (pfd.revents & POLLIN)
             {
-                if (_pollFds[i].fd == _serverSocket)
+                if (pfd.fd == _serverSocket)
                     acceptNewClient();
                 else
-                    handleClientData(_pollFds[i].fd);
-            }
-
-            if (_pollFds[i].revents & POLLOUT)
-            {
-                handleClientWrite(_pollFds[i].fd);
-            }
-
-            // handle disconnections here
-            // POLLHUP - Poll Hang Up -  client pressed ctrl+c or closed irc client
-            // POLLERR - Poll Error - socket error occurred
-            if (_pollFds[i].revents & (POLLHUP | POLLERR))
-            {
-                if (_pollFds[i].fd != _serverSocket)
                 {
-                    removeClient(_pollFds[i].fd);
-                    // TODO check if we need to adjust the index
-                    continue;
+                    handleClientData(pfd.fd);
+
+                    // After handleClientData(), check if client was removed
+                    if (std::find_if(_pollFds.begin(), _pollFds.end(),
+                                     [&](const pollfd &pf)
+                                     { return pf.fd == pfd.fd; }) == _pollFds.end())
+                    {
+                        continue; // client removed, skip increment
+                    }
                 }
             }
+
+            // Handle outgoing messages
+            if (pfd.revents & POLLOUT)
+            {
+                handleClientWrite(pfd.fd);
+            }
+
+            // Handle hangups/errors
+            if (pfd.revents & (POLLHUP | POLLERR))
+            {
+                if (pfd.fd != _serverSocket)
+                {
+                    removeClient(pfd.fd);
+                    _clients.erase(pfd.fd);
+                    continue; // client removed, skip increment
+                }
+            }
+
             ++i;
         }
     }
@@ -158,6 +182,11 @@ void Server::acceptNewClient()
         return;
     }
 
+    int flags = fcntl(clientSocket, F_GETFL, 0);
+    if (flags == -1)
+        flags = 0;
+    fcntl(clientSocket, F_SETFL, flags | O_NONBLOCK);
+
     struct pollfd clientPoll;
     clientPoll.fd = clientSocket;
     clientPoll.events = POLLIN;
@@ -170,7 +199,6 @@ void Server::acceptNewClient()
     std::cout << "New client connected: FD " << clientSocket
               << " from " << inet_ntoa(clientAddr.sin_addr) << std::endl;
 }
-
 
 void Server::handleClientData(int clientFd)
 {
@@ -214,7 +242,7 @@ void Server::handleClientWrite(int fd)
         {
             if (_pollFds[i].fd == fd)
             {
-                _pollFds[i].events &= ~POLLOUT; 
+                _pollFds[i].events &= ~POLLOUT;
                 break;
             }
         }

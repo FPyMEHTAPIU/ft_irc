@@ -26,7 +26,7 @@ private:
   bool _status;
   const std::string _PASSWORD;
 
-  std::set<std::shared_ptr<Channel>> _channels;
+  std::map<std::string, std::shared_ptr<Channel>> _channels;
   std::map<int, Client> _clients;
 
   int _serverSocket;
@@ -53,9 +53,23 @@ public:
   void handleClientWrite(int fd);
   void removeClient(int clientFd);
 
-  std::set<std::shared_ptr<Channel>> getChannels() const;
-  std::map<int, Client> getClients() const;
+  std::map<std::string, std::shared_ptr<Channel>> &getChannels();
+  const std::map<std::string, std::shared_ptr<Channel>> &getChannels() const;
+  const std::map<int, Client> &getClients() const;
+  std::map<int, Client> &getClients();
   std::vector<struct pollfd> getPollFds() const;
-  void addChannel(std::shared_ptr<Channel> channel);
+  void addChannel(const std::string &channelName, std::shared_ptr<Channel> channel);
   void addClient(int fd, Client client);
+
+  void enableWrite(int clientFd)
+  {
+    for (size_t i = 0; i < _pollFds.size(); ++i)
+    {
+      if (_pollFds[i].fd == clientFd)
+      {
+        _pollFds[i].events |= POLLOUT;
+        break;
+      }
+    }
+  }
 };
