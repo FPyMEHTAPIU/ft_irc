@@ -2,6 +2,7 @@
 DEF_COLOR = \033[0;39m
 GRAY = \033[0;90m
 RED = \033[0;91m
+ORANGE = \e[0m\e[38;5;202m
 GREEN = \033[0;92m
 YELLOW = \033[0;93m
 BLUE = \033[0;94m
@@ -66,22 +67,22 @@ RM = rm -rf
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@echo "$(BLUE)🛠  Compiling ircserv... 🛠$(DEF_COLOR)"
+	@echo "$(BLUE)🔨 Compiling ircserv...$(DEF_COLOR)"
 	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
-	@echo "$(GREEN)🥳 Success!🥳$(DEF_COLOR)"
+	@echo "$(GREEN)🥳 Success! Run with ./$(NAME) [port] [password]$(DEF_COLOR)"
 
 $(OBJ_DIR)/%.o:	$(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
 	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	@echo "$(YELLOW)🚽 Deleting object files... 🚽$(DEF_COLOR)"
+	@echo "$(YELLOW)🚽 Deleting object files...$(DEF_COLOR)"
 	@$(RM) $(OBJ_DIR)
 
 fclean: clean
-	@echo "$(RED)🪦 Deleting ircserv... 🪦$(DEF_COLOR)"
+	@echo "$(ORANGE)🪦 Deleting $(NAME)...$(DEF_COLOR)"
 	@$(RM) $(NAME)
-	@echo "$(RED)☣️  CLEAR ☣️$(DEF_COLOR)"
+	@echo "$(RED)☣️  CLEAR!$(DEF_COLOR)"
 
 re: fclean all
 

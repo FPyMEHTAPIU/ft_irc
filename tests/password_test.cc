@@ -10,7 +10,7 @@ TEST(ValidatePasswordTest, TooShortPassword) {
 }
 
 TEST(ValidatePasswordTest, TooLongPassword) {
-    EXPECT_THROW(validatePassword(std::string(PWD_MAX_LENGTH + 1, 'a')), std::out_of_range);
+    EXPECT_THROW(validatePassword(std::string(PASSWORD_MAX_LENGTH + 1, 'a')), std::out_of_range);
 }
 
 TEST(ValidatePasswordTest, ContainsWhitespace) {
@@ -20,8 +20,8 @@ TEST(ValidatePasswordTest, ContainsWhitespace) {
 
 TEST(ValidatePasswordTest, ValidPassword) {
     EXPECT_NO_THROW(validatePassword("validPass1"));
-    EXPECT_NO_THROW(validatePassword(std::string(PWD_MIN_LENGTH, 'a')));
-    EXPECT_NO_THROW(validatePassword(std::string(PWD_MAX_LENGTH, 'a')));
+    EXPECT_NO_THROW(validatePassword(std::string(PASSWORD_MIN_LENGTH, 'a')));
+    EXPECT_NO_THROW(validatePassword(std::string(PASSWORD_MAX_LENGTH, 'a')));
 }
 
 TEST(ValidatePasswordTest, OnlySpaces) {
@@ -49,19 +49,19 @@ TEST(ValidatePasswordTest, NewlineCharacter) {
 }
 
 TEST(ValidatePasswordTest, PasswordExactlyMinLength) {
-    EXPECT_NO_THROW(validatePassword(std::string(PWD_MIN_LENGTH, 'a')));
+    EXPECT_NO_THROW(validatePassword(std::string(PASSWORD_MIN_LENGTH, 'a')));
 }
 
 TEST(ValidatePasswordTest, PasswordExactlyMaxLength) {
-    EXPECT_NO_THROW(validatePassword(std::string(PWD_MAX_LENGTH, 'a')));
+    EXPECT_NO_THROW(validatePassword(std::string(PASSWORD_MAX_LENGTH, 'a')));
 }
 
 TEST(ValidatePasswordTest, PasswordOneLessThanMin) {
-    EXPECT_THROW(validatePassword(std::string(PWD_MIN_LENGTH - 1, 'a')), std::out_of_range);
+    EXPECT_THROW(validatePassword(std::string(PASSWORD_MIN_LENGTH - 1, 'a')), std::out_of_range);
 }
 
 TEST(ValidatePasswordTest, PasswordOneMoreThanMax) {
-    EXPECT_THROW(validatePassword(std::string(PWD_MAX_LENGTH + 1, 'a')), std::out_of_range);
+    EXPECT_THROW(validatePassword(std::string(PASSWORD_MAX_LENGTH + 1, 'a')), std::out_of_range);
 }
 
 TEST(ValidatePasswordTest, SpecialCharactersAllowed) {
