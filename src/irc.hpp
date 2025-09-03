@@ -11,15 +11,18 @@
 #define ANSI_RED "\033[0;91m"
 #define ANSI_RESET "\033[0;39m"
 
-#define PWD_MIN_LENGTH 5
-#define PWD_MAX_LENGTH 32
-
-class Server;
+#define PASSWORD_MIN_LENGTH 5
+#define PASSWORD_MAX_LENGTH 32
 
 // parser.cpp
 void validatePassword(const std::string &password);
 int validateArgs(int argc, char **argv);
 int validatePort(const std::string &strPort);
+
+// utils/
+bool isValidChannelName(const std::string &name);
+bool isValidNickname(const std::string &nickName);
+bool isValidUsername(const std::string &userName);
 void validateClientName(std::string name);
 void validateCommand(const std::string &command);
 
@@ -33,17 +36,17 @@ std::string handleInput(const std::string &input, Server *server, int clientFd);
 // These `hash` fucntions are for using `std::string` in `switch`
 constexpr uint32_t hash(const char *data, size_t size) noexcept
 {
-  uint32_t h = 5381;
-  for (const char *c = data; c < data + size; ++c)
-    h = ((h << 5) + h) + static_cast<unsigned char>(*c);
-  return h;
+    uint32_t h = 5381;
+    for (const char *c = data; c < data + size; ++c)
+        h = ((h << 5) + h) + static_cast<unsigned char>(*c);
+    return h;
 }
 
 // These `hash` fucntions are for using `std::string` in `switch`
 constexpr uint32_t hash(const char *str) noexcept
 {
-  size_t len = 0;
-  while (str[len] != '\0')
-    ++len;
-  return hash(str, len);
+    size_t len = 0;
+    while (str[len] != '\0')
+        ++len;
+    return hash(str, len);
 }
