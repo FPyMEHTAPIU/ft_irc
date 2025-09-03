@@ -18,11 +18,11 @@ Server::Server(int port, std::string password, Logger *logger)
         throw std::invalid_argument("Logger cannot be null");
     }
 
-    _logger->info(Component::SERVER, "Initializing server on port " + std::to_string(port));
+    _logger->info(SERVER, "Initializing server on port " + std::to_string(port));
     setupSocket();
     bindSocket();
     listenSocket();
-    _logger->info(Component::SERVER, "Server initialization complete");
+    _logger->info(SERVER, "Server initialization complete");
 }
 
 Server::~Server()
@@ -74,16 +74,16 @@ void Server::setupSocket()
 
     if (_serverSocket == -1)
     {
-        _logger->fatal(Component::SERVER, "Failed to create socket: " + std::string(strerror(errno)));
+        _logger->fatal(SERVER, "Failed to create socket: " + std::string(strerror(errno)));
         throw std::runtime_error("Socket creation failed");
     }
 
-    _logger->debug(Component::SERVER, "Socket created successfully");
+    _logger->debug(SERVER, "Socket created successfully");
 
     int opt = 1;
     if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
     {
-        _logger->error(Component::SERVER, "Failed to set socket options: " + std::string(strerror(errno)));
+        _logger->error(SERVER, "Failed to set socket options: " + std::string(strerror(errno)));
         throw std::runtime_error("Socket option setting failed");
     }
 }
@@ -96,27 +96,27 @@ void Server::bindSocket()
 
     if (bind(_serverSocket, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr)) < 0)
     {
-        _logger->fatal(Component::SERVER, "Failed to bind socket to port " + std::to_string(_PORT) + ": " + std::string(strerror(errno)));
+        _logger->fatal(SERVER, "Failed to bind socket to port " + std::to_string(_PORT) + ": " + std::string(strerror(errno)));
         throw std::runtime_error("Socket binding failed");
     }
 
-    _logger->info(Component::SERVER, "Socket bound to port " + std::to_string(_PORT));
+    _logger->info(SERVER, "Socket bound to port " + std::to_string(_PORT));
 }
 
 void Server::listenSocket()
 {
     if (listen(_serverSocket, SERVER_BACKLOG) < 0)
     {
-        _logger->fatal(Component::SERVER, "Failed to listen on socket: " + std::string(strerror(errno)));
+        _logger->fatal(SERVER, "Failed to listen on socket: " + std::string(strerror(errno)));
         throw std::runtime_error("Socket listen failed");
     }
 
-    _logger->info(Component::SERVER, "Server listening with backlog " + std::to_string(SERVER_BACKLOG));
+    _logger->info(SERVER, "Server listening with backlog " + std::to_string(SERVER_BACKLOG));
 }
 
 void Server::start()
 {
-    _logger->info(Component::SERVER, "Starting IRC Server on port " + std::to_string(_PORT));
+    _logger->info(SERVER, "Starting IRC Server on port " + std::to_string(_PORT));
 
     struct pollfd serverPoll;
     serverPoll.fd = _serverSocket;
@@ -124,7 +124,7 @@ void Server::start()
     serverPoll.revents = 0;
     _pollFds.push_back(serverPoll);
 
-    _logger->debug(Component::SERVER, "Server socket added to poll monitoring");
+    _logger->debug(SERVER, "Server socket added to poll monitoring");
 }
 
 void Server::run()
@@ -196,7 +196,9 @@ void Server::acceptNewClient()
     if (clientSocket < 0)
     {
         if (errno != EWOULDBLOCK && errno != EAGAIN)
-            std::cerr << "Failed to accept client: " << strerror(errno) << std::endl;
+        {
+            _logger->error(NETWORK, "Failed to accept client connection: " + std::string(strerror(errno)));
+        }
         return;
     }
 
@@ -215,7 +217,7 @@ void Server::acceptNewClient()
     addClient(clientSocket, newClient);
 
     std::string clientIP = inet_ntoa(clientAddr.sin_addr);
-    _logger->info(Component::CLIENT, "New client connected - FD: " + std::to_string(clientSocket) + " IP: " + clientIP);
+    _logger->info(CLIENT, "New client connected - FD: " + std::to_string(clientSocket) + " IP: " + clientIP);
 
     send(clientSocket, "Welcome to our IRC server!\n", 29, 0);
 }
@@ -232,11 +234,11 @@ void Server::handleClientData(int clientFd)
         // == 0  means client closed connection gracefully
         if (bytesRead == 0)
         {
-            _logger->info(Component::CLIENT, "Client FD " + std::to_string(clientFd) + " disconnected");
+            _logger->info(CLIENT, "Client FD " + std::to_string(clientFd) + " disconnected");
         }
         else if (errno != EWOULDBLOCK && errno != EAGAIN)
         {
-            _logger->error(Component::CLIENT, "Error reading from client FD " + std::to_string(clientFd) + ": " + std::string(strerror(errno)));
+            _logger->error(CLIENT, "Error reading from client FD " + std::to_string(clientFd) + ": " + std::string(strerror(errno)));
         }
         removeClient(clientFd);
         return;
@@ -299,7 +301,7 @@ void Server::handleClientWrite(int fd)
 
 void Server::removeClient(int clientFd)
 {
-    _logger->info(Component::CLIENT, "Removing client FD " + std::to_string(clientFd));
+    _logger->info(CLIENT, "Removing client FD " + std::to_string(clientFd));
 
     // Find the client socket in the pollfd vector
     auto it = std::find_if(_pollFds.begin(), _pollFds.end(), [clientFd](const struct pollfd &pfd)

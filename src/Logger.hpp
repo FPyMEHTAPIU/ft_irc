@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-enum class LogLevel
+enum LogLevel
 {
     DEBUG,
     INFO,
@@ -12,8 +12,7 @@ enum class LogLevel
     ERROR,
     FATAL
 };
-
-enum class Component
+enum Component
 {
     SERVER,
     CLIENT,

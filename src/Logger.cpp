@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <ctime>
+#include "irc.hpp"
 
 Logger::Logger() : _consoleOutput(true), _fileOutput(false)
 {
@@ -55,19 +56,19 @@ void Logger::log(LogLevel level, Component component, const std::string &message
     std::string levelStr;
     switch (level)
     {
-    case LogLevel::DEBUG:
+    case DEBUG:
         levelStr = "DEBUG";
         break;
-    case LogLevel::INFO:
+    case INFO:
         levelStr = "INFO";
         break;
-    case LogLevel::WARNING:
+    case WARNING:
         levelStr = "WARNING";
         break;
-    case LogLevel::ERROR:
+    case ERROR:
         levelStr = "ERROR";
         break;
-    case LogLevel::FATAL:
+    case FATAL:
         levelStr = "FATAL";
         break;
     }
@@ -75,25 +76,25 @@ void Logger::log(LogLevel level, Component component, const std::string &message
     std::string componentStr;
     switch (component)
     {
-    case Component::SERVER:
+    case SERVER:
         componentStr = "SERVER";
         break;
-    case Component::CLIENT:
+    case CLIENT:
         componentStr = "CLIENT";
         break;
-    case Component::CHANNEL:
+    case CHANNEL:
         componentStr = "CHANNEL";
         break;
-    case Component::AUTH:
+    case AUTH:
         componentStr = "AUTH";
         break;
-    case Component::COMMAND:
+    case COMMAND:
         componentStr = "COMMAND";
         break;
-    case Component::NETWORK:
+    case NETWORK:
         componentStr = "NETWORK";
         break;
-    case Component::PARSER:
+    case PARSER:
         componentStr = "PARSER";
         break;
     }
@@ -104,27 +105,27 @@ void Logger::log(LogLevel level, Component component, const std::string &message
 
 void Logger::debug(Component component, const std::string &message)
 {
-    log(LogLevel::DEBUG, component, message);
+    log(DEBUG, component, message);
 }
 
 void Logger::info(Component component, const std::string &message)
 {
-    log(LogLevel::INFO, component, message);
+    log(INFO, component, message);
 }
 
 void Logger::warning(Component component, const std::string &message)
 {
-    log(LogLevel::WARNING, component, message);
+    log(WARNING, component, message);
 }
 
 void Logger::error(Component component, const std::string &message)
 {
-    log(LogLevel::ERROR, component, message);
+    log(ERROR, component, message);
 }
 
 void Logger::fatal(Component component, const std::string &message)
 {
-    log(LogLevel::FATAL, component, message);
+    log(FATAL, component, message);
 }
 
 std::string Logger::getCurrentTimestamp()
