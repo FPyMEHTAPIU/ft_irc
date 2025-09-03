@@ -226,8 +226,6 @@ void Server::handleClientData(int clientFd)
 
     std::string response = "";
     // handle command here
-    if (!buffer[0])
-        response = "Empty command provided\r\n";
 
     std::vector<std::string> cmds = split(buffer, '\n');
 
@@ -236,12 +234,6 @@ void Server::handleClientData(int clientFd)
         response = handleInput(cmd, this, clientFd);
         send(clientFd, response.c_str(), response.length(), 0);
     }
-
-    // response = handleInput(buffer, this, clientFd);
-
-    // just echo back for now
-    // std::string response = "Echo: " + std::string(buffer);
-    // send(clientFd, response.c_str(), response.length(), 0);
 }
 
 void Server::handleClientWrite(int fd)
