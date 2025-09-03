@@ -14,6 +14,8 @@
 #define PASSWORD_MIN_LENGTH 5
 #define PASSWORD_MAX_LENGTH 32
 
+class Server;
+
 // parser.cpp
 void validatePassword(const std::string &password);
 int validateArgs(int argc, char **argv);
