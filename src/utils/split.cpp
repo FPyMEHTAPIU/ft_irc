@@ -1,6 +1,6 @@
 #include "../irc.hpp"
 
-std::vector<std::string> split(std::string sentence, char sep)
+std::vector<std::string> split(const std::string &sentence, char sep)
 {
   std::vector<std::string> vec;
   size_t start;

@@ -13,5 +13,6 @@ std::string handleUser(Client &client, const std::vector<std::string> &args)
 		result += ":ircserv 004 " + nick + " ircserv 1.0 iowghraAsORTVSxNCWqBzK\r\n";
 	}
 
+	std::cout << "Handling user: " << result << std::endl;
 	return result;
 }

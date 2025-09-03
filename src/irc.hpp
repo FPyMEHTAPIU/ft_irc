@@ -25,7 +25,8 @@ void validateCommand(const std::string &command);
 
 // utils/
 bool isValidChannelName(const std::string &name);
-std::vector<std::string> split(std::string sentence, char sep);
+std::vector<std::string> split(const std::string &sentence, char sep);
+std::string strToLowercase(const std::string &str);
 
 std::string handleInput(const std::string &input, Server *server, int clientFd);
 

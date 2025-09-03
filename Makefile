@@ -37,6 +37,7 @@ PARSER_FILES = \
 
 UTILS_FILES = \
 	split.cpp \
+	strToLowercase.cpp \
 	validateChannelName.cpp \
 	validateClientName.cpp
 

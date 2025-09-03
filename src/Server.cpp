@@ -61,7 +61,7 @@ void Server::addClient(int fd, Client client)
 void Server::setupSocket()
 {
     // Create socket with SOCK_NONBLOCK
-    _serverSocket = socket(AF_INET, SOCK_STREAM, 0); // | SOCK_NONBLOCK, 0); commented for MacOS, doesn't work with nonblock
+    _serverSocket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0); // | SOCK_NONBLOCK, 0); commented for MacOS, doesn't work with nonblock
 
     if (_serverSocket == -1)
         throw std::runtime_error("Failed to create socket: " + std::string(strerror(errno)));
@@ -224,12 +224,24 @@ void Server::handleClientData(int clientFd)
     buffer[bytesRead] = '\0';
     std::cout << "Received from client fd " << clientFd << ": " << buffer;
 
+    std::string response = "";
     // handle command here
-    std::string response = handleInput(buffer, this, clientFd);
+    if (!buffer[0])
+        response = "Empty command provided\r\n";
+
+    std::vector<std::string> cmds = split(buffer, '\n');
+
+    for (const std::string &cmd : cmds)
+    {
+        response = handleInput(cmd, this, clientFd);
+        send(clientFd, response.c_str(), response.length(), 0);
+    }
+
+    // response = handleInput(buffer, this, clientFd);
 
     // just echo back for now
     // std::string response = "Echo: " + std::string(buffer);
-    send(clientFd, response.c_str(), response.length(), 0);
+    // send(clientFd, response.c_str(), response.length(), 0);
 }
 
 void Server::handleClientWrite(int fd)
