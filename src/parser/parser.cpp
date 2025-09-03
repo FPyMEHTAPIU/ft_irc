@@ -2,13 +2,17 @@
 
 void validatePassword(const std::string &password)
 {
-    if (password.empty() || password.length() < PWD_MIN_LENGTH)
+    if (password.empty())
     {
-        throw std::out_of_range("Password must have at least " + std::to_string(PWD_MIN_LENGTH));
+        throw std::out_of_range("Password cannot be empty");
     }
-    else if (password.length() > PWD_MAX_LENGTH)
+    else if (password.length() < PASSWORD_MIN_LENGTH)
     {
-        throw std::out_of_range("Password can have maximum " + std::to_string(PWD_MAX_LENGTH));
+        throw std::out_of_range("Password must have at least " + std::to_string(PASSWORD_MIN_LENGTH) + " characters");
+    }
+    else if (password.length() > PASSWORD_MAX_LENGTH)
+    {
+        throw std::out_of_range("Password can have a maximum of " + std::to_string(PASSWORD_MAX_LENGTH) + " characters");
     }
     else if (password.find_first_of(" \t\n\r") != std::string::npos)
     {
@@ -16,14 +20,87 @@ void validatePassword(const std::string &password)
     }
 }
 
+// Allowed special characters in nicknames: -[]\\`^{}
+// First character must be a letter or one of the specials
+// Allowed after first character: letters, digits and specials
+// Not allowed: spaces, control characters, @, !
+bool isValidNickname(const std::string &nickName)
+{
+    const size_t MIN_LEN = 1;
+    const size_t MAX_LEN = 16; // RFC says 9, modern servers may allow more
+
+    if (nickName.size() < MIN_LEN || nickName.size() > MAX_LEN)
+        return false;
+
+    const std::string specials = "-[]\\`^{}";
+
+    unsigned char first = static_cast<unsigned char>(nickName[0]);
+    if (!(std::isalpha(first) || specials.find(nickName[0]) != std::string::npos))
+        return false;
+
+    for (size_t i = 0; i < nickName.size(); ++i)
+    {
+        unsigned char ch = static_cast<unsigned char>(nickName[i]);
+        if (std::isalpha(ch) || std::isdigit(ch) || specials.find(ch) != std::string::npos)
+        {
+            continue;
+        }
+        if (std::isspace(ch) || ch == '@' || ch == '!' || ch == ',' || ch < 0x20)
+        {
+            return false;
+        }
+        // Any other character not in allowed set is invalid
+        return false;
+    }
+    return true;
+}
+
+// Allowed characters in usernames: letters, digits, - (dash), _ (underscore), . (dot)
+// Not allowed: spaces, control characters, @, !
+bool isValidUsername(const std::string &userName)
+{
+    const size_t MIN_LEN = 1;
+    const size_t MAX_LEN = 12; // RFC says 10, many servers allow up to 30
+
+    if (userName.size() < MIN_LEN || userName.size() > MAX_LEN)
+        return false;
+
+    for (size_t i = 0; i < userName.size(); ++i)
+    {
+        unsigned char ch = static_cast<unsigned char>(userName[i]);
+
+        if (std::isalnum(ch) || ch == '-' || ch == '_' || ch == '.')
+        {
+            continue;
+        }
+        if (std::isspace(ch) || ch == '@' || ch == '!' || ch == ',' || ch < 0x20)
+        {
+            return false;
+        }
+        // Any other character not in allowed set is invalid
+        return false;
+    }
+    return true;
+}
+
 int validatePort(const std::string &strPort)
 {
+    if (strPort.empty())
+    {
+        throw std::invalid_argument("Port cannot be empty");
+    }
+    for (unsigned char c : strPort)
+    {
+        if (!std::isdigit(c))
+        {
+            throw std::invalid_argument("Port must contain only numbers");
+        }
+    }
     int port = std::stoi(strPort);
     if (port <= 0 || port > 65535)
     {
         throw std::out_of_range("Invalid port number. Must be between 1 and 65535.");
     }
-
     return port;
 }
 
@@ -33,7 +110,6 @@ int validateArgs(int argc, char **argv)
     {
         throw std::invalid_argument("Usage: ./ircserv <port> <password>");
     }
-
     int port = validatePort(argv[1]);
     validatePassword(argv[2]);
 
