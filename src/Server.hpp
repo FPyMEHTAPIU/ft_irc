@@ -11,12 +11,13 @@
 #include "channel/Channel.hpp"
 #include "client/Client.hpp"
 #include "irc.hpp"
+#include "Logger.hpp"
 
 #define SERVER_BACKLOG 10 // max number of pending connections
 #ifndef SOCK_NONBLOCK
 #define SOCK_NONBLOCK 2
 #endif
-// class Client;
+
 class Channel;
 
 class Server
@@ -26,10 +27,12 @@ private:
   bool _status;
   const std::string _PASSWORD;
 
+  int _serverSocket;
+  Logger *_logger;
+
   std::map<std::string, std::shared_ptr<Channel>> _channels;
   std::map<int, Client> _clients;
 
-  int _serverSocket;
   struct sockaddr_in _serverAddr;
   std::vector<struct pollfd> _pollFds;
 
@@ -40,7 +43,7 @@ private:
 public:
   Server() = delete;
   Server &operator=(Server const &server) = delete;
-  Server(int port, std::string password);
+  Server(int port, std::string password, Logger *logger);
   ~Server();
 
   void start();

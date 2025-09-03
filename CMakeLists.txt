@@ -76,3 +76,15 @@ target_link_libraries(
   GTest::gtest_main
 )
 gtest_discover_tests(command_test)
+
+# CLogger test executable
+add_executable(
+  logger_test
+  tests/logger_test.cc
+  ../src/Logger.cpp
+)
+target_link_libraries(
+  logger_test
+  GTest::gtest_main
+)
+gtest_discover_tests(logger_test)

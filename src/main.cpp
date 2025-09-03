@@ -14,8 +14,8 @@ int main(int argc, char *argv[])
 
         std::string password = argv[2];
         validatePassword(password);
-
-        Server server(port, password);
+        Logger logger;
+        Server server(port, password, &logger);
         server.start();
         server.run();
     }

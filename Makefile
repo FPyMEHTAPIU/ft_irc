@@ -50,7 +50,9 @@ SRC_FILES = \
 	$(addprefix $(UTILS_DIR)/, $(UTILS_FILES)) \
 	Server.cpp \
 	inputHandle.cpp \
-	main.cpp
+	main.cpp \
+	Logger.cpp
+
 
 SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 

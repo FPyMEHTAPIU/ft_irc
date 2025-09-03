@@ -10,11 +10,19 @@
 #include <algorithm> // for std::find_if
 #include <sys/fcntl.h>
 
-Server::Server(int port, std::string password) : _PORT(port), _status(false), _PASSWORD(password), _serverSocket(-1)
+Server::Server(int port, std::string password, Logger *logger)
+    : _PORT(port), _status(false), _PASSWORD(password), _serverSocket(-1), _logger(logger)
 {
+    if (!_logger)
+    {
+        throw std::invalid_argument("Logger cannot be null");
+    }
+
+    _logger->info(Component::SERVER, "Initializing server on port " + std::to_string(port));
     setupSocket();
     bindSocket();
     listenSocket();
+    _logger->info(Component::SERVER, "Server initialization complete");
 }
 
 Server::~Server()
@@ -65,49 +73,58 @@ void Server::setupSocket()
     _serverSocket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0); // | SOCK_NONBLOCK, 0); commented for MacOS, doesn't work with nonblock
 
     if (_serverSocket == -1)
-        throw std::runtime_error("Failed to create socket: " + std::string(strerror(errno)));
+    {
+        _logger->fatal(Component::SERVER, "Failed to create socket: " + std::string(strerror(errno)));
+        throw std::runtime_error("Socket creation failed");
+    }
 
-    int opt = 1; // Set socket options to 1 to allow address reuse
+    _logger->debug(Component::SERVER, "Socket created successfully");
 
+    int opt = 1;
     if (setsockopt(_serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
     {
-        close(_serverSocket);
-        throw std::runtime_error("Failed to set socket options: " + std::string(strerror(errno)));
+        _logger->error(Component::SERVER, "Failed to set socket options: " + std::string(strerror(errno)));
+        throw std::runtime_error("Socket option setting failed");
     }
 }
 
 void Server::bindSocket()
 {
-    _serverAddr.sin_family = AF_INET;         // ipv4
-    _serverAddr.sin_addr.s_addr = INADDR_ANY; //  Listen on all available network interfaces
-    _serverAddr.sin_port = htons(_PORT);      // Host TO Network Short, uses big-endian byte order
+    _serverAddr.sin_family = AF_INET;
+    _serverAddr.sin_addr.s_addr = INADDR_ANY;
+    _serverAddr.sin_port = htons(_PORT);
 
     if (bind(_serverSocket, (struct sockaddr *)&_serverAddr, sizeof(_serverAddr)) < 0)
     {
-        close(_serverSocket);
-        throw std::runtime_error("Failed to bind socket: " + std::string(strerror(errno)));
+        _logger->fatal(Component::SERVER, "Failed to bind socket to port " + std::to_string(_PORT) + ": " + std::string(strerror(errno)));
+        throw std::runtime_error("Socket binding failed");
     }
+
+    _logger->info(Component::SERVER, "Socket bound to port " + std::to_string(_PORT));
 }
 
 void Server::listenSocket()
 {
     if (listen(_serverSocket, SERVER_BACKLOG) < 0)
     {
-        close(_serverSocket);
-        throw std::runtime_error("Failed to listen on socket: " + std::string(strerror(errno)));
+        _logger->fatal(Component::SERVER, "Failed to listen on socket: " + std::string(strerror(errno)));
+        throw std::runtime_error("Socket listen failed");
     }
+
+    _logger->info(Component::SERVER, "Server listening with backlog " + std::to_string(SERVER_BACKLOG));
 }
 
 void Server::start()
 {
-    std::cout << "IRC Server starting on port " << _PORT << std::endl;
+    _logger->info(Component::SERVER, "Starting IRC Server on port " + std::to_string(_PORT));
 
-    // Add server socket to poll array
     struct pollfd serverPoll;
     serverPoll.fd = _serverSocket;
     serverPoll.events = POLLIN;
     serverPoll.revents = 0;
     _pollFds.push_back(serverPoll);
+
+    _logger->debug(Component::SERVER, "Server socket added to poll monitoring");
 }
 
 void Server::run()
@@ -197,8 +214,9 @@ void Server::acceptNewClient()
     Client newClient(clientSocket);
     addClient(clientSocket, newClient);
 
-    std::cout << "New client connected: FD " << clientSocket
-              << " from " << inet_ntoa(clientAddr.sin_addr) << std::endl;
+    std::string clientIP = inet_ntoa(clientAddr.sin_addr);
+    _logger->info(Component::CLIENT, "New client connected - FD: " + std::to_string(clientSocket) + " IP: " + clientIP);
+
     send(clientSocket, "Welcome to our IRC server!\n", 29, 0);
 }
 
@@ -213,12 +231,12 @@ void Server::handleClientData(int clientFd)
     {
         // == 0  means client closed connection gracefully
         if (bytesRead == 0)
-            std::cout << "Client FD " << clientFd << " disconnected." << std::endl;
+        {
+            _logger->info(Component::CLIENT, "Client FD " + std::to_string(clientFd) + " disconnected");
+        }
         else if (errno != EWOULDBLOCK && errno != EAGAIN)
         {
-            // real error!
-            std::cerr << "Error reading from client FD " << clientFd << ": "
-                      << strerror(errno) << std::endl;
+            _logger->error(Component::CLIENT, "Error reading from client FD " + std::to_string(clientFd) + ": " + std::string(strerror(errno)));
         }
         removeClient(clientFd);
         return;
@@ -281,6 +299,8 @@ void Server::handleClientWrite(int fd)
 
 void Server::removeClient(int clientFd)
 {
+    _logger->info(Component::CLIENT, "Removing client FD " + std::to_string(clientFd));
+
     // Find the client socket in the pollfd vector
     auto it = std::find_if(_pollFds.begin(), _pollFds.end(), [clientFd](const struct pollfd &pfd)
                            { return pfd.fd == clientFd; });
