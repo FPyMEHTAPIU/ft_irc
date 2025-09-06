@@ -2,14 +2,14 @@
 #include "commands/commands.hpp"
 #include "Server.hpp"
 
-std::string handleInput(const std::string &input, Server *server, int clientFd)
+void handleInput(const std::string &input, Server *server, int clientFd)
 {
 	std::string result = "";
 	try
 	{
 		std::vector<std::string> args = split(input, ' ');
 		if (args.empty())
-			return "";
+			return;
 
 		if (startsWith(args[0], "/"))
 		{
@@ -43,31 +43,34 @@ std::string handleInput(const std::string &input, Server *server, int clientFd)
 			result = handleJoin(server, args, client);
 			break;
 
+		case hash("privmsg"):
+			handlePrivmsg(server, args, clientFd);
+			return;
 		case hash("pass"):
 			if (args.size() < 2)
-				return "461 PASS :Not enough parameters\r\n";
+				result = "461 PASS :Not enough parameters\r\n";
 			try
 			{
 				validatePassword(args[1]);
 			}
 			catch (const std::exception &e)
 			{
-				return std::string("464 PASS :") + e.what() + "\r\n";
+				result = std::string("464 PASS :") + e.what() + "\r\n";
 			}
 			if (args[1] != server->getPassword())
 				result = "464 PASS :Password incorrect\r\n";
 
 			// server->getClients()[clientFd].setAuthenticated(true); //when authentication has been set up
-			return "Password accepted\r\n";
+			result = "Password accepted\r\n";
 			break;
 
 		default:
 			break;
 		}
+		send(clientFd, result.c_str(), result.length(), 0);
 	}
 	catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
 	}
-	return result;
 }

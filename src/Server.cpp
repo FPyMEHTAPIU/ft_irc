@@ -253,15 +253,11 @@ void Server::handleClientData(int clientFd)
     // std::cout << "Received from client fd " << clientFd << ": " << buffer;
     _logger->info(CLIENT, "Received from client fd " + std::to_string(clientFd) + ": " + buffer);
 
-    std::string response = "";
-    // handle command here
-
     std::vector<std::string> cmds = split(buffer, '\n');
 
     for (const std::string &cmd : cmds)
     {
-        response = handleInput(cmd, this, clientFd);
-        send(clientFd, response.c_str(), response.length(), 0);
+        handleInput(cmd, this, clientFd);
     }
 }
 

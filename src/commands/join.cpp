@@ -17,9 +17,9 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, Cli
 	}
 
 	auto &channels = server->getChannels();
-	auto it = channels.find(channelName);
+	auto channel = channels.find(channelName);
 
-	if (it == channels.end())
+	if (channel == channels.end())
 	{
 		// Create the channel and add the client
 		std::shared_ptr<Channel> newChannel = std::make_shared<Channel>(channelName, client);
@@ -27,7 +27,7 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, Cli
 	}
 	else
 	{
-		it->second->addUser(client); // <- access the shared_ptr via .second
+		channel->second->addUser(client); // <- access the shared_ptr via .second
 	}
 
 	// Only send a proper JOIN message once
