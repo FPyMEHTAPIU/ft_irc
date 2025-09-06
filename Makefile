@@ -31,6 +31,7 @@ CLIENT_FILES = \
 COMMANDS_FILES = \
 	join.cpp \
 	nick.cpp \
+	privmsg.cpp \
 	user.cpp
 
 PARSER_FILES = \
