@@ -33,6 +33,7 @@ public:
   bool getIsInviteOnly() const;
   bool getIsTopicChangeMode() const;
   size_t getUserLimit() const;
+  bool isMember(const Client &client) const;
 
   // Only for operators
   void setName(std::string newName);

@@ -62,6 +62,7 @@ public:
   std::map<int, Client> &getClients();
   std::vector<struct pollfd> getPollFds() const;
   const std::string &getPassword() const;
+  Client getClientByNick(const std::string &nick, const std::string &senderNick) const;
 
   void addChannel(const std::string &channelName, std::shared_ptr<Channel> channel);
   void addClient(int fd, Client client);

@@ -61,6 +61,18 @@ const std::string &Server::getPassword() const
     return _PASSWORD;
 }
 
+Client Server::getClientByNick(const std::string &nick, const std::string &senderNick) const
+{
+    for (auto &client : _clients)
+    {
+        if (client.second.getNick() == nick)
+        {
+            return client.second;
+        }
+    }
+    throw new std::invalid_argument(":ircserv 401 " + senderNick + " " + nick + " :No such nick/channel\r\n");
+}
+
 void Server::addChannel(const std::string &channelName, std::shared_ptr<Channel> channel)
 {
     _channels.insert({channelName, channel});
