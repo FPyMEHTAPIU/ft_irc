@@ -6,12 +6,11 @@ std::string handleInput(const std::string &input, Server *server, int clientFd)
 	std::string result = "";
 	try
 	{
-
 		std::vector<std::string> args = split(input, ' ');
 		if (args.empty())
 			return "";
 
-		if (args.at(0).starts_with('/'))
+		if (startsWith(args[0], "/"))
 		{
 			args.at(0).erase(args.at(0).begin());
 		}
@@ -41,6 +40,9 @@ std::string handleInput(const std::string &input, Server *server, int clientFd)
 		case hash("join"):
 			std::cout << "joining..." << args.at(1) << std::endl;
 			result = handleJoin(server, args, client);
+			break;
+
+		case hash("pass"):
 			break;
 
 		default:

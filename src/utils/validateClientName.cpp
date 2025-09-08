@@ -4,19 +4,6 @@
 #include <algorithm>
 #include <cctype>
 
-static bool startsWith(std::string str, std::string symbols)
-{
-  char firstChar = str[0];
-  for (char c : symbols)
-  {
-    if (firstChar == c)
-    {
-      return true;
-    }
-  }
-  return false;
-}
-
 void validateClientName(std::string name)
 {
   if (name.empty())

@@ -28,8 +28,8 @@ bool isValidUsername(const std::string &userName);
 void validateClientName(std::string name);
 void validateCommand(const std::string &command);
 
-// utils/
-bool isValidChannelName(const std::string &name);
+// utils.cpp
+bool startsWith(std::string str, std::string symbols);
 std::vector<std::string> split(const std::string &sentence, char sep);
 std::string strToLowercase(const std::string &str);
 
