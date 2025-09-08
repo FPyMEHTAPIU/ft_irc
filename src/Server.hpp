@@ -55,11 +55,14 @@ public:
   void handleClientWrite(int fd);
   void removeClient(int clientFd);
 
+  // Server getters
   std::map<std::string, std::shared_ptr<Channel>> &getChannels();
   const std::map<std::string, std::shared_ptr<Channel>> &getChannels() const;
   const std::map<int, Client> &getClients() const;
   std::map<int, Client> &getClients();
   std::vector<struct pollfd> getPollFds() const;
+  const std::string &getPassword() const;
+
   void addChannel(const std::string &channelName, std::shared_ptr<Channel> channel);
   void addClient(int fd, Client client);
 

@@ -56,6 +56,11 @@ std::vector<struct pollfd> Server::getPollFds() const
     return _pollFds;
 }
 
+const std::string &Server::getPassword() const
+{
+    return _PASSWORD;
+}
+
 void Server::addChannel(const std::string &channelName, std::shared_ptr<Channel> channel)
 {
     _channels.insert({channelName, channel});
@@ -116,7 +121,7 @@ void Server::listenSocket()
 
 void Server::start()
 {
-    _logger->info(SERVER, "Starting IRC Server on port " + std::to_string(_PORT));
+    _logger->info(SERVER, "Starting IRC server on port " + std::to_string(_PORT));
 
     struct pollfd serverPoll;
     serverPoll.fd = _serverSocket;
@@ -129,7 +134,7 @@ void Server::start()
 
 void Server::run()
 {
-    std::cout << "IRC Server is running..." << std::endl;
+    std::cout << "IRC server is running..." << std::endl;
     _status = true;
 
     while (_status)
@@ -217,7 +222,7 @@ void Server::acceptNewClient()
     addClient(clientSocket, newClient);
 
     std::string clientIP = inet_ntoa(clientAddr.sin_addr);
-    _logger->info(CLIENT, "New client connected - FD: " + std::to_string(clientSocket) + " IP: " + clientIP);
+    _logger->info(CLIENT, "New client connected. FD: " + std::to_string(clientSocket) + " IP: " + clientIP);
 
     send(clientSocket, "Welcome to our IRC server!\n", 29, 0);
 }
@@ -245,7 +250,8 @@ void Server::handleClientData(int clientFd)
     }
 
     buffer[bytesRead] = '\0';
-    std::cout << "Received from client fd " << clientFd << ": " << buffer;
+    // std::cout << "Received from client fd " << clientFd << ": " << buffer;
+    _logger->info(CLIENT, "Received from client fd " + std::to_string(clientFd) + ": " + buffer);
 
     std::string response = "";
     // handle command here
@@ -330,5 +336,5 @@ void Server::stop()
 
     _pollFds.clear();
 
-    std::cout << "IRC Server stopped." << std::endl;
+    std::cout << "IRC server stopped." << std::endl;
 }

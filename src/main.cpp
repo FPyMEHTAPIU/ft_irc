@@ -2,12 +2,15 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>
+#include <csignal>
 
 #include "Server.hpp"
 #include "irc.hpp"
 
 int main(int argc, char *argv[])
 {
+    std::signal(SIGINT, SIG_DFL);
+    std::signal(SIGQUIT, SIG_DFL);
     try
     {
         int port = validateArgs(argc, argv);
@@ -25,6 +28,5 @@ int main(int argc, char *argv[])
                   << ANSI_RESET << e.what() << std::endl;
         return 1;
     }
-
     return 0;
 }
