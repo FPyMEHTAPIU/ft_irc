@@ -37,8 +37,7 @@ PARSER_FILES = \
 	parser.cpp
 
 UTILS_FILES = \
-	split.cpp \
-	strToLowercase.cpp \
+	utils.cpp \
 	validateChannelName.cpp \
 	validateClientName.cpp
 
@@ -49,7 +48,7 @@ SRC_FILES = \
 	$(addprefix $(PARSER_DIR)/, $(PARSER_FILES)) \
 	$(addprefix $(UTILS_DIR)/, $(UTILS_FILES)) \
 	Server.cpp \
-	inputHandle.cpp \
+	handleInput.cpp \
 	main.cpp \
 	Logger.cpp
 

@@ -11,6 +11,10 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, Cli
 		return "461 JOIN :Not enough parameters\r\n";
 
 	std::string channelName = args[1];
+	if (!isValidChannelName(channelName))
+	{
+		return "476 " + client.getNick() + " " + channelName + " :Bad Channel Mask\r\n";
+	}
 
 	auto &channels = server->getChannels();
 	auto it = channels.find(channelName);
