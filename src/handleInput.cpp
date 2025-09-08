@@ -44,7 +44,7 @@ std::string handleInput(const std::string &input, Server *server, int clientFd)
 			break;
 
 		case hash("pass"):
-			if (args.size() < 1)
+			if (args.size() < 2)
 				return "461 PASS :Not enough parameters\r\n";
 			try
 			{
