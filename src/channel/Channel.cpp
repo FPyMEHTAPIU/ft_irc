@@ -67,6 +67,11 @@ size_t Channel::getUserLimit() const
   return _userLimit;
 }
 
+bool Channel::isMember(const Client &client) const
+{
+  return _users.contains(client);
+}
+
 void Channel::setName(std::string newName)
 {
   _name = newName;
