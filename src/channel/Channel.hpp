@@ -45,6 +45,10 @@ public:
   std::string getNamesReply(const std::string &requesterNick) const;
   bool isEmpty() const;
 
+  bool hasUser(const Client &user) const;
+  bool isOperator(const Client &user) const;
+  bool isFull() const;
+
   // Only for operators
   std::string getKey() const;
   void setKey(std::string newKey);

@@ -199,3 +199,13 @@ void Channel::setUserLimit(int newLimit)
 {
   _userLimit = newLimit;
 }
+
+bool Channel::hasUser(const Client &user) const
+{
+  return _users.find(user) != _users.end();
+}
+
+bool Channel::isOperator(const Client &user) const
+{
+  return _operators.find(user) != _operators.end();
+}

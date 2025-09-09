@@ -16,3 +16,4 @@ std::string handleKick(Server *server, const std::vector<std::string> &args,
                        std::shared_ptr<Client> client, std::string reason);
 std::string handlePart(Server *server, const std::vector<std::string> &args,
                        std::shared_ptr<Client> client, std::string reason);
+std::string handleInvite(Server *server, const std::vector<std::string> &args, Client &client);

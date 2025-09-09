@@ -60,6 +60,8 @@ public:
   void removeClient(int clientFd);
   void removeChannel(std::string channelName);
 
+  Client *findClientByNick(const std::string &nick);
+
   // Server getters
   const std::map<std::string, std::shared_ptr<Channel>> &getChannels() const;
   const std::map<int, std::shared_ptr<Client>> &getClients() const;

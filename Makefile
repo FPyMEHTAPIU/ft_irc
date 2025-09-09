@@ -39,7 +39,8 @@ COMMANDS_FILES = \
 	privmsg.cpp \
 	topic.cpp \
 	user.cpp \
-	who.cpp
+	who.cpp \
+	invite.cpp \
 
 PARSER_FILES = \
 	parser.cpp
