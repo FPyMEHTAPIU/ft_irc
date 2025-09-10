@@ -22,6 +22,7 @@ add_executable(
   username_test
   tests/username_test.cc
   ../src/utils/validateClientName.cpp
+  ../src/utils/utils.cpp
 )
 target_link_libraries(
   username_test 
