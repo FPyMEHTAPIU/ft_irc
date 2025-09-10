@@ -63,10 +63,9 @@ const std::string &Server::getPassword() const
 
 Client &Server::getClientByNick(const std::string &nick, const std::string &senderNick)
 {
-    std::cout << "sender nick: " << senderNick << " receiver nick " << nick << std::endl;
     for (auto &client : _clients)
     {
-        std::cout << "Client fd: " << client.second.getFd() << " , nick: " << client.second.getNick() << "\n";
+        std::cout << "Client fd: " << client.second.getFd() << " , nick: " << client.second.getNick() << std::endl;
         if (client.second.getNick() == nick)
         {
             return client.second;
@@ -264,7 +263,6 @@ void Server::handleClientData(int clientFd)
     }
 
     buffer[bytesRead] = '\0';
-    // std::cout << "Received from client fd " << clientFd << ": " << buffer;
     _logger->info(CLIENT, "Received from client fd " + std::to_string(clientFd) + ": " + buffer);
 
     std::vector<std::string> cmds = split(buffer, '\n');

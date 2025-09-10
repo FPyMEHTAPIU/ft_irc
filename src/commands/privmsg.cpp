@@ -1,6 +1,6 @@
 #include "../irc.hpp"
 
-void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId)
+void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, std::string msg)
 {
 	try
 	{
@@ -14,14 +14,14 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId)
 		Client &sender = senderPair->second;
 		std::string senderNick = sender.getNick();
 
-		if (args.size() != 3)
+		if (args.size() != 2)
 		{
 			throw std::invalid_argument(":ircserv 461 " + senderNick +
 										" PRIVMSG :Not enough parameters\r\n");
 		}
 
 		std::string target = args.at(1);
-		std::string message = args.at(2);
+		std::string message = msg;
 
 		// check message
 		if (message.empty())
@@ -47,14 +47,14 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId)
 			}
 
 			// Broadcast to all members except sender
-			for (auto &member : channel->getUsers())
+			for (Client &member : channel->getUsers())
 			{
 				int memberFd = member.getFd();
 				if (memberFd != senderId)
 				{
 					std::string out = ":" + senderNick + " PRIVMSG " + target + " :" + message + "\r\n";
-					send(memberFd, out.c_str(), out.size(), 0);
-					// member->enqueueMessage(out);
+					member.enqueueMessage(out);
+					server->enableWrite(memberFd);
 				}
 			}
 			return;
@@ -62,22 +62,19 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId)
 		// handle sending in DM
 		else
 		{
-			// TODO: FIX SENDER NICK DISAPPEARING
-			std::cout << "1: " << target << " 2: " << senderNick << std::endl;
 			Client &receiver = server->getClientByNick(target, senderNick);
-			std::cout << "After\n";
 			{
-				std::cout << "Handling a DM\n";
+				std::cout << "Handling a DM, sender: " << senderNick << " receiver: " << receiver.getNick() << " target: " << target << std::endl;
 				std::string out = ":" + senderNick + " PRIVMSG " + target + " :" + message + "\r\n";
-				send(receiver.getFd(), out.c_str(), out.size(), 0);
-				// receiver->enqueueMessage(out);
+				receiver.enqueueMessage(out);
+				server->enableWrite(receiver.getFd());
 			}
 		}
 	}
 	catch (std::exception &e)
 	{
 		std::string err = e.what();
-		// std::cerr << "Exception: " << err << std::endl;
-		send(senderId, err.c_str(), err.size(), 0);
+		std::cerr << "Exception: " << err << std::endl;
+		// send(senderId, err.c_str(), err.size(), 0);
 	}
 }

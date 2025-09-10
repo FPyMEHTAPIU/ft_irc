@@ -1,9 +1,9 @@
 #include "commands.hpp"
 
-std::string handleUser(Client &client, const std::vector<std::string> &args)
+std::string handleUser(Client &client, const std::vector<std::string> &args, std::string msg)
 {
 	std::string result = "";
-	client.setUser(args[1], args[4].substr(1)); // get rid of ':'
+	client.setUser(args.at(1), msg); // get rid of ':'
 	if (client.isRegistered())
 	{
 		std::string nick = client.getNick();

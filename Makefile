@@ -60,7 +60,7 @@ SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ 			=	$(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
 
 CXX = c++
-CXXFLAGS = -std=c++20 -Wall -Werror -Wextra -O3
+CXXFLAGS = -std=c++20 -Wall -Werror -Wextra -O3 -g
 
 RM = rm -rf
 

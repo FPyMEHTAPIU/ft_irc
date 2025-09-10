@@ -19,25 +19,21 @@ private:
   }
 
 public:
-  // Конструктор для нового клиента с fd
   Client(int fd)
       : _fd(fd), _nick(""), _username(""), _realname(""), registered(false) {}
 
-  // Конструктор с fd и ником
   Client(int fd, const std::string &nick)
       : _fd(fd), _nick(nick), _username(""), _realname(""), registered(false)
   {
     checkRegistration();
   }
 
-  // Конструктор с fd, ником и username/realname
   Client(int fd, const std::string &nick, const std::string &user, const std::string &real)
       : _fd(fd), _nick(nick), _username(user), _realname(real), registered(false)
   {
     checkRegistration();
   }
 
-  // Удаляем оператор присваивания
   Client &operator=(Client const &client) = delete;
 
   ~Client() {}
@@ -47,7 +43,6 @@ public:
     return _fd < client._fd;
   }
 
-  // --- Методы доступа ---
   std::string getNick() const { return _nick; }
   void setNick(const std::string &newNick)
   {

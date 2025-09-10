@@ -18,7 +18,7 @@ Channel::Channel(std::string name, Client creator)
   }
 
   _name = name;
-  _operators.insert(creator);
+  _operators.push_back(creator);
   _topic = "";
   _isInviteOnly = false;
   _isTopicChangeMode = false;
@@ -32,12 +32,17 @@ bool Channel::operator<(Channel const &channel) const
   return _name < channel._name;
 }
 
-std::set<Client> Channel::getUsers() const
+std::vector<Client> Channel::getUsers() const
 {
   return _users;
 }
 
-std::set<Client> Channel::getOperators() const
+std::vector<Client> &Channel::getUsers()
+{
+  return _users;
+}
+
+std::vector<Client> Channel::getOperators() const
 {
   return _operators;
 }
@@ -69,7 +74,14 @@ size_t Channel::getUserLimit() const
 
 bool Channel::isMember(const Client &client) const
 {
-  return _users.contains(client);
+  for (auto &user : _users)
+  {
+    if (user.getNick() == client.getNick())
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 void Channel::setName(std::string newName)
@@ -91,12 +103,12 @@ void Channel::setTopic(std::string newTopic)
 
 void Channel::addUser(Client newUser)
 {
-  _users.insert(newUser);
+  _users.push_back(newUser);
 }
 
 void Channel::addOperator(Client newOperator)
 {
-  _operators.insert(newOperator);
+  _operators.push_back(newOperator);
 }
 
 void Channel::setIsInviteOnly(bool newMode)

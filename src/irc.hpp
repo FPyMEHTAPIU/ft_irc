@@ -32,8 +32,8 @@ void validateCommand(const std::string &command);
 bool startsWith(std::string str, std::string symbols);
 std::vector<std::string> split(const std::string &sentence, char sep);
 std::string strToLowercase(const std::string &str);
-void handleInput(const std::string &input, Server *server, int clientFd);
-void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId);
+void handleInput(std::string input, Server *server, int clientFd);
+void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, std::string msg);
 
 // These `hash` fucntions are for using `std::string` in `switch`
 constexpr uint32_t hash(const char *data, size_t size) noexcept

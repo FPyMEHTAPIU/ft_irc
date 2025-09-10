@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include <set>
+#include <vector>
 #include "../client/Client.hpp"
 
 class Client;
@@ -10,8 +10,8 @@ class Channel
 private:
   std::string _name;
   std::string _topic;
-  std::set<Client> _users;
-  std::set<Client> _operators;
+  std::vector<Client> _users;
+  std::vector<Client> _operators;
 
   // Modes
   bool _isInviteOnly;
@@ -26,8 +26,9 @@ public:
   ~Channel();
   bool operator<(Channel const &channel) const;
 
-  std::set<Client> getUsers() const;
-  std::set<Client> getOperators() const;
+  std::vector<Client> getUsers() const;
+  std::vector<Client> &getUsers();
+  std::vector<Client> getOperators() const;
   std::string getName() const;
   std::string getTopic() const;
   bool getIsInviteOnly() const;

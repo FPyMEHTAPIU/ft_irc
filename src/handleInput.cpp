@@ -2,12 +2,29 @@
 #include "commands/commands.hpp"
 #include "Server.hpp"
 
-void handleInput(const std::string &input, Server *server, int clientFd)
+void handleInput(std::string input, Server *server, int clientFd)
 {
 	std::string result = "";
 	try
 	{
-		std::vector<std::string> args = split(input, ' ');
+		// remove garbage return char
+		input.pop_back();
+		std::vector<std::string> args;
+		std::vector<std::string> splittedMsg = split(input, ':');
+		std::string msg = "";
+
+		if (splittedMsg.size() > 1)
+		{
+			std::cout << "Debug: " << splittedMsg.at(0) << std::endl;
+			args = split(splittedMsg.at(0), ' ');
+			msg = splittedMsg.at(1);
+			std::cout << "msg: " << splittedMsg.at(1) << std::endl;
+		}
+		else
+		{
+			args = split(input, ' ');
+		}
+
 		if (args.empty())
 			return;
 
@@ -32,10 +49,10 @@ void handleInput(const std::string &input, Server *server, int clientFd)
 			break;
 
 		case hash("user"):
-			if (args.size() < 5) // RFC requires 4 params
+			if (args.size() < 4) // RFC requires 4 params
 				result = "461 USER :Not enough parameters\r\n";
 			else
-				result = handleUser(client, args);
+				result = handleUser(client, args, msg);
 			break;
 
 		case hash("join"):
@@ -44,7 +61,7 @@ void handleInput(const std::string &input, Server *server, int clientFd)
 			break;
 
 		case hash("privmsg"):
-			handlePrivmsg(server, args, clientFd);
+			handlePrivmsg(server, args, clientFd, msg);
 			return;
 		case hash("pass"):
 			if (args.size() < 2)
@@ -67,7 +84,9 @@ void handleInput(const std::string &input, Server *server, int clientFd)
 		default:
 			break;
 		}
-		send(clientFd, result.c_str(), result.length(), 0);
+		client.enqueueMessage(result);
+		server->enableWrite(clientFd);
+		// send(clientFd, result.c_str(), result.length(), 0);
 	}
 	catch (std::exception &e)
 	{
