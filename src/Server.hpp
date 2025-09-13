@@ -31,7 +31,7 @@ private:
   Logger *_logger;
 
   std::map<std::string, std::shared_ptr<Channel>> _channels;
-  std::map<int, Client> _clients;
+  std::map<int, std::shared_ptr<Client>> _clients;
 
   struct sockaddr_in _serverAddr;
   std::vector<struct pollfd> _pollFds;
@@ -56,13 +56,12 @@ public:
   void removeClient(int clientFd);
 
   // Server getters
-  std::map<std::string, std::shared_ptr<Channel>> &getChannels();
-  const std::map<std::string, std::shared_ptr<Channel>> &getChannels() const;
-  const std::map<int, Client> &getClients() const;
-  std::map<int, Client> &getClients();
+  std::map<std::string, std::shared_ptr<Channel>> getChannels();
+  std::map<int, std::shared_ptr<Client>> getClients();
   std::vector<struct pollfd> getPollFds() const;
   const std::string &getPassword() const;
-  Client &getClientByNick(const std::string &nick, const std::string &senderNick);
+  std::shared_ptr<Client> getClientByNick(const std::string &nick, const std::string &senderNick);
+  std::shared_ptr<Channel> getChannelByName(const std::string &channelName);
 
   void addChannel(const std::string &channelName, std::shared_ptr<Channel> channel);
   void addClient(int fd, Client client);

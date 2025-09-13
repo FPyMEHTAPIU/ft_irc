@@ -37,7 +37,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 
 		validateCommand(cmdLowercase);
 
-		Client &client = server->getClients().at(clientFd);
+		std::shared_ptr<Client> client = server->getClients().at(clientFd);
 
 		switch (hash(cmdLowercase.c_str(), cmdLowercase.size()))
 		{
@@ -84,7 +84,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 		default:
 			break;
 		}
-		client.enqueueMessage(result);
+		client->enqueueMessage(result);
 		server->enableWrite(clientFd);
 		// send(clientFd, result.c_str(), result.length(), 0);
 	}

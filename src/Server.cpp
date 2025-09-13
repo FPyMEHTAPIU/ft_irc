@@ -30,23 +30,12 @@ Server::~Server()
     stop();
 }
 
-// In Server.cpp
-std::map<std::string, std::shared_ptr<Channel>> &Server::getChannels()
+std::map<std::string, std::shared_ptr<Channel>> Server::getChannels()
 {
     return _channels;
 }
 
-const std::map<std::string, std::shared_ptr<Channel>> &Server::getChannels() const
-{
-    return _channels;
-}
-
-const std::map<int, Client> &Server::getClients() const
-{
-    return _clients;
-}
-
-std::map<int, Client> &Server::getClients()
+std::map<int, std::shared_ptr<Client>> Server::getClients()
 {
     return _clients;
 }
@@ -61,17 +50,27 @@ const std::string &Server::getPassword() const
     return _PASSWORD;
 }
 
-Client &Server::getClientByNick(const std::string &nick, const std::string &senderNick)
+std::shared_ptr<Client> Server::getClientByNick(const std::string &nick, const std::string &senderNick)
 {
     for (auto &client : _clients)
     {
-        std::cout << "Client fd: " << client.second.getFd() << " , nick: " << client.second.getNick() << std::endl;
-        if (client.second.getNick() == nick)
+        std::cout << "Client fd: " << client.second->getFd() << " , nick: " << client.second->getNick() << std::endl;
+        if (client.second->getNick() == nick)
         {
             return client.second;
         }
     }
     throw std::invalid_argument(":ircserv 401 " + senderNick + " " + nick + " :No such nick/channel\r\n");
+}
+
+std::shared_ptr<Channel> Server::getChannelByName(const std::string &channelName)
+{
+    auto channel = _channels.find(channelName);
+    if (channel != _channels.end())
+    {
+        return channel->second;
+    }
+    throw std::invalid_argument(":ircserv 401 " + channelName + " :No such nick/channel\r\n");
 }
 
 void Server::addChannel(const std::string &channelName, std::shared_ptr<Channel> channel)
@@ -81,7 +80,7 @@ void Server::addChannel(const std::string &channelName, std::shared_ptr<Channel>
 
 void Server::addClient(int fd, Client client)
 {
-    _clients.insert({fd, client});
+    _clients.insert({fd, std::make_shared<Client>(client)});
 }
 
 // Private socket methods
@@ -270,17 +269,17 @@ void Server::handleClientData(int clientFd)
 
 void Server::handleClientWrite(int fd)
 {
-    Client &client = _clients.at(fd);
+    std::shared_ptr<Client> client = _clients.at(fd);
 
-    if (!client.hasPendingMessages())
+    if (!client->hasPendingMessages())
     {
         disableWrite(fd);
         return;
     }
 
     std::cout << "[WRITE] fd=" << fd
-              << " msg=" << client.frontMessage() << std::endl;
-    std::string &msg = client.frontMessage();
+              << " msg=" << client->frontMessage() << std::endl;
+    std::string &msg = client->frontMessage();
     ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
     if (sent < 0)
     {
@@ -303,7 +302,7 @@ void Server::handleClientWrite(int fd)
 
     if ((size_t)sent == msg.size())
     {
-        client.popMessage();
+        client->popMessage();
     }
     else
     {

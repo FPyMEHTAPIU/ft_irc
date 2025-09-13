@@ -11,8 +11,8 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, 
 										"socketFd \r\n");
 		}
 
-		Client &sender = senderPair->second;
-		std::string senderNick = sender.getNick();
+		std::shared_ptr<Client> sender = senderPair->second;
+		std::string senderNick = sender->getNick();
 
 		if (args.size() != 2)
 		{
@@ -33,13 +33,7 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, 
 		// handle sending in channel
 		if (!target.empty() && (target.at(0) == '#' || target.at(0) == '&' || target.at(0) == '+' || target.at(0) == '!'))
 		{
-			// target = target.substr(1);
-			auto channelPair = server->getChannels().find(target);
-			if (channelPair == server->getChannels().end())
-			{
-				throw std::invalid_argument(":ircserv 403 PRIVMSG :No such channel " + target + " :No such channel\r\n");
-			}
-			std::shared_ptr<Channel> channel = channelPair->second;
+			std::shared_ptr<Channel> channel = server->getChannelByName(target);
 
 			if (!channel->isMember(sender))
 			{
@@ -47,13 +41,13 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, 
 			}
 
 			// Broadcast to all members except sender
-			for (Client &member : channel->getUsers())
+			for (auto member : channel->getUsers())
 			{
-				int memberFd = member.getFd();
+				int memberFd = member->getFd();
 				if (memberFd != senderId)
 				{
 					std::string out = ":" + senderNick + " PRIVMSG " + target + " :" + message + "\r\n";
-					member.enqueueMessage(out);
+					member->enqueueMessage(out);
 					server->enableWrite(memberFd);
 				}
 			}
@@ -62,13 +56,13 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, 
 		// handle sending in DM
 		else
 		{
-			Client &receiver = server->getClientByNick(target, senderNick);
+			std::shared_ptr<Client> receiver = server->getClientByNick(target, senderNick);
 			{
-				std::cout << "Handling a DM, sender: " << senderNick << " receiver: " << receiver.getNick() << " target: " << target << std::endl;
+				std::cout << "Handling a DM, sender: " << senderNick << " receiver: " << receiver->getNick() << " target: " << target << std::endl;
 				// std::string out = ":" + senderNick + "!" + sender.getUsername() + "@ircserv PRIVMSG " + target + " :" + message + "\r\n";
 				std::string out = ":" + senderNick + " PRIVMSG " + target + " :" + message + "\r\n";
-				receiver.enqueueMessage(out);
-				server->enableWrite(receiver.getFd());
+				receiver->enqueueMessage(out);
+				server->enableWrite(receiver->getFd());
 			}
 		}
 	}

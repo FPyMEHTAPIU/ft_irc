@@ -1,12 +1,12 @@
 #include "commands.hpp"
 
-std::string handleUser(Client &client, const std::vector<std::string> &args, std::string msg)
+std::string handleUser(std::shared_ptr<Client> client, const std::vector<std::string> &args, std::string msg)
 {
 	std::string result = "";
-	client.setUser(args.at(1), msg); // get rid of ':'
-	if (client.isRegistered())
+	client->setUser(args.at(1), msg); // get rid of ':'
+	if (client->isRegistered())
 	{
-		std::string nick = client.getNick();
+		std::string nick = client->getNick();
 		result = ":ircserv 001 " + nick + " :Welcome to the IRC network\r\n";
 		result += ":ircserv 002 " + nick + " :Your host is ircserv\r\n";
 		result += ":ircserv 003 " + nick + " :This server was created today\r\n";

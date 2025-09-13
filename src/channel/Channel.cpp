@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 #include "../irc.hpp"
 
-Channel::Channel(std::string name, Client creator)
+Channel::Channel(std::string name, std::shared_ptr<Client> creator)
 {
 
   if (name.empty())
@@ -19,6 +19,7 @@ Channel::Channel(std::string name, Client creator)
 
   _name = name;
   _operators.push_back(creator);
+  _users.push_back(creator);
   _topic = "";
   _isInviteOnly = false;
   _isTopicChangeMode = false;
@@ -27,22 +28,17 @@ Channel::Channel(std::string name, Client creator)
 
 Channel::~Channel() {}
 
-bool Channel::operator<(Channel const &channel) const
+bool Channel::operator<(std::shared_ptr<Channel> channel) const
 {
-  return _name < channel._name;
+  return _name < channel->_name;
 }
 
-std::vector<Client> Channel::getUsers() const
-{
-  return _users;
-}
-
-std::vector<Client> &Channel::getUsers()
+std::vector<std::shared_ptr<Client>> Channel::getUsers()
 {
   return _users;
 }
 
-std::vector<Client> Channel::getOperators() const
+std::vector<std::shared_ptr<Client>> Channel::getOperators() const
 {
   return _operators;
 }
@@ -72,11 +68,12 @@ size_t Channel::getUserLimit() const
   return _userLimit;
 }
 
-bool Channel::isMember(const Client &client) const
+bool Channel::isMember(std::shared_ptr<Client> client) const
 {
   for (auto &user : _users)
   {
-    if (user.getNick() == client.getNick())
+    std::cout << "User in channel " << user->getNick() << ", client " << client->getNick();
+    if (user->getNick() == client->getNick())
     {
       return true;
     }
@@ -101,12 +98,12 @@ void Channel::setTopic(std::string newTopic)
   }
 }
 
-void Channel::addUser(Client newUser)
+void Channel::addUser(std::shared_ptr<Client> newUser)
 {
   _users.push_back(newUser);
 }
 
-void Channel::addOperator(Client newOperator)
+void Channel::addOperator(std::shared_ptr<Client> newOperator)
 {
   _operators.push_back(newOperator);
 }

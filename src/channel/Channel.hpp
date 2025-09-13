@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <memory>
 #include "../client/Client.hpp"
 
 class Client;
@@ -10,8 +11,8 @@ class Channel
 private:
   std::string _name;
   std::string _topic;
-  std::vector<Client> _users;
-  std::vector<Client> _operators;
+  std::vector<std::shared_ptr<Client>> _users;
+  std::vector<std::shared_ptr<Client>> _operators;
 
   // Modes
   bool _isInviteOnly;
@@ -22,25 +23,24 @@ private:
 public:
   Channel() = delete;
   Channel &operator=(Channel const &channel) = delete;
-  Channel(std::string name, Client creator);
+  Channel(std::string name, std::shared_ptr<Client> creator);
   ~Channel();
-  bool operator<(Channel const &channel) const;
+  bool operator<(std::shared_ptr<Channel> channel) const;
 
-  std::vector<Client> getUsers() const;
-  std::vector<Client> &getUsers();
-  std::vector<Client> getOperators() const;
+  std::vector<std::shared_ptr<Client>> getUsers();
+  std::vector<std::shared_ptr<Client>> getOperators() const;
   std::string getName() const;
   std::string getTopic() const;
   bool getIsInviteOnly() const;
   bool getIsTopicChangeMode() const;
   size_t getUserLimit() const;
-  bool isMember(const Client &client) const;
+  bool isMember(std::shared_ptr<Client> client) const;
 
   // Only for operators
   void setName(std::string newName);
   void setTopic(std::string newName);
-  void addUser(Client newUser);
-  void addOperator(Client newOperator);
+  void addUser(std::shared_ptr<Client> newUser);
+  void addOperator(std::shared_ptr<Client> newOperator);
   void setIsInviteOnly(bool newMode);
   void setIsTopicChangeMode(bool newMode);
   void setUserLimit(int newLimit);
