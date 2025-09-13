@@ -31,13 +31,13 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, 
 		}
 
 		// handle sending in channel
-		if (!target.empty() && (target[0] == '#' || target[0] == '&' || target[0] == '+' || target[0] == '!'))
+		if (!target.empty() && (target.at(0) == '#' || target.at(0) == '&' || target.at(0) == '+' || target.at(0) == '!'))
 		{
-			target = target.substr(1);
+			// target = target.substr(1);
 			auto channelPair = server->getChannels().find(target);
 			if (channelPair == server->getChannels().end())
 			{
-				throw std::invalid_argument(":ircserv 403 PRIVMSG :No such channel " + senderNick + " " + target + " :No such channel\r\n");
+				throw std::invalid_argument(":ircserv 403 PRIVMSG :No such channel " + target + " :No such channel\r\n");
 			}
 			std::shared_ptr<Channel> channel = channelPair->second;
 
@@ -65,6 +65,7 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, 
 			Client &receiver = server->getClientByNick(target, senderNick);
 			{
 				std::cout << "Handling a DM, sender: " << senderNick << " receiver: " << receiver.getNick() << " target: " << target << std::endl;
+				// std::string out = ":" + senderNick + "!" + sender.getUsername() + "@ircserv PRIVMSG " + target + " :" + message + "\r\n";
 				std::string out = ":" + senderNick + " PRIVMSG " + target + " :" + message + "\r\n";
 				receiver.enqueueMessage(out);
 				server->enableWrite(receiver.getFd());

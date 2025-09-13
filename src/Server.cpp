@@ -159,11 +159,8 @@ void Server::run()
         if (pollRes == 0)
             continue;
 
-        size_t i = 0;
-        while (i < _pollFds.size())
+        for (auto &pfd : _pollFds)
         {
-            struct pollfd &pfd = _pollFds[i];
-
             // Handle incoming data
             if (pfd.revents & POLLIN)
             {
@@ -199,8 +196,6 @@ void Server::run()
                     continue; // client removed, skip increment
                 }
             }
-
-            ++i;
         }
     }
 }
@@ -242,7 +237,7 @@ void Server::acceptNewClient()
 
 void Server::handleClientData(int clientFd)
 {
-    char buffer[1024]; // TODO: define a constant for buffer size
+    char buffer[BUFFER_SIZE];
 
     ssize_t bytesRead = recv(clientFd, buffer, sizeof(buffer) - 1, 0); // attempt to read data
 
@@ -279,19 +274,22 @@ void Server::handleClientWrite(int fd)
 
     if (!client.hasPendingMessages())
     {
-        for (size_t i = 0; i < _pollFds.size(); ++i)
-        {
-            if (_pollFds[i].fd == fd)
-            {
-                _pollFds[i].events &= ~POLLOUT;
-                break;
-            }
-        }
+        disableWrite(fd);
         return;
     }
 
+    std::cout << "[WRITE] fd=" << fd
+              << " msg=" << client.frontMessage() << std::endl;
     std::string &msg = client.frontMessage();
     ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
+    if (sent < 0)
+    {
+        std::cerr << "Send failed for fd " << fd << ": " << strerror(errno) << std::endl;
+    }
+    else
+    {
+        std::cout << "Sent " << sent << " bytes of " << msg.size() << " to fd " << fd << std::endl;
+    }
 
     if (sent < 0)
     {

@@ -14,6 +14,10 @@
 #define PASSWORD_MIN_LENGTH 5
 #define PASSWORD_MAX_LENGTH 32
 
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 4096
+#endif
+
 class Server;
 
 // parser.cpp

@@ -71,10 +71,22 @@ public:
   {
     for (size_t i = 0; i < _pollFds.size(); ++i)
     {
-      if (_pollFds[i].fd == clientFd)
+      if (_pollFds.at(i).fd == clientFd)
       {
-        _pollFds[i].events |= POLLOUT;
+        _pollFds.at(i).events |= POLLOUT;
         break;
+      }
+    }
+  }
+
+  void disableWrite(int fd)
+  {
+    for (size_t i = 0; i < _pollFds.size(); ++i)
+    {
+      if (_pollFds[i].fd == fd)
+      {
+        _pollFds[i].events &= ~POLLOUT;
+        return;
       }
     }
   }
