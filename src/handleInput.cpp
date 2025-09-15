@@ -63,6 +63,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 		case hash("privmsg"):
 			handlePrivmsg(server, args, clientFd, msg);
 			return;
+
 		case hash("pass"):
 			if (args.size() < 2)
 				result = "461 PASS :Not enough parameters\r\n";
@@ -81,6 +82,9 @@ void handleInput(std::string input, Server *server, int clientFd)
 			result = "Password accepted\r\n";
 			break;
 
+		case hash("ping"):
+			handlePing(args);
+			return;
 		default:
 			break;
 		}

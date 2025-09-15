@@ -4,8 +4,9 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, 
 {
 	try
 	{
-		auto senderPair = server->getClients().find(senderId);
-		if (senderPair == server->getClients().end())
+		auto clients = server->getClients();
+		auto senderPair = clients.find(senderId);
+		if (senderPair == clients.end())
 		{
 			throw std::invalid_argument(":ircserv 401 PRIVMSG :No client found in" + std::to_string(senderId) +
 										"socketFd \r\n");
