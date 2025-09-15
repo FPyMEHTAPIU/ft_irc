@@ -54,7 +54,6 @@ std::shared_ptr<Client> Server::getClientByNick(const std::string &nick, const s
 {
     for (auto &client : _clients)
     {
-        std::cout << "Client fd: " << client.second->getFd() << " , nick: " << client.second->getNick() << std::endl;
         if (client.second->getNick() == nick)
         {
             return client.second;
@@ -277,18 +276,8 @@ void Server::handleClientWrite(int fd)
         return;
     }
 
-    std::cout << "[WRITE] fd=" << fd
-              << " msg=" << client->frontMessage() << std::endl;
     std::string &msg = client->frontMessage();
     ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
-    if (sent < 0)
-    {
-        std::cerr << "Send failed for fd " << fd << ": " << strerror(errno) << std::endl;
-    }
-    else
-    {
-        std::cout << "Sent " << sent << " bytes of " << msg.size() << " to fd " << fd << std::endl;
-    }
 
     if (sent < 0)
     {

@@ -15,7 +15,7 @@
 #define PASSWORD_MAX_LENGTH 32
 
 #ifndef BUFFER_SIZE
-# define BUFFER_SIZE 4096
+#define BUFFER_SIZE 4096
 #endif
 
 class Server;
@@ -37,7 +37,6 @@ bool startsWith(std::string str, std::string symbols);
 std::vector<std::string> split(const std::string &sentence, char sep);
 std::string strToLowercase(const std::string &str);
 void handleInput(std::string input, Server *server, int clientFd);
-void handlePrivmsg(Server *server, std::vector<std::string> args, int senderId, std::string msg);
 
 // These `hash` fucntions are for using `std::string` in `switch`
 constexpr uint32_t hash(const char *data, size_t size) noexcept

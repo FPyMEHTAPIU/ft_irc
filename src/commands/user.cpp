@@ -13,6 +13,5 @@ std::string handleUser(std::shared_ptr<Client> client, const std::vector<std::st
 		result += ":ircserv 004 " + nick + " ircserv 1.0 iowghraAsORTVSxNCWqBzK\r\n";
 	}
 
-	std::cout << "Handling user: " << result << std::endl;
 	return result;
 }

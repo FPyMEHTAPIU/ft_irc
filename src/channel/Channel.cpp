@@ -72,7 +72,6 @@ bool Channel::isMember(std::shared_ptr<Client> client) const
 {
   for (auto &user : _users)
   {
-    std::cout << "User in channel " << user->getNick() << ", client " << client->getNick();
     if (user->getNick() == client->getNick())
     {
       return true;
