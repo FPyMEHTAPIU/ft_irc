@@ -1,18 +1,5 @@
 #include "../irc.hpp"
 
-bool startsWith(std::string str, std::string symbols)
-{
-    char firstChar = str[0];
-    for (char c : symbols)
-    {
-        if (firstChar == c)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 std::string strToLowercase(const std::string &str)
 {
     std::string strLowercase(str.size(), '\0');

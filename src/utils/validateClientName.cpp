@@ -10,7 +10,7 @@ void validateClientName(std::string name)
   {
     throw(std::invalid_argument("Client cannot be empty!"));
   }
-  else if (startsWith(name, "$:#&~@%+"))
+  else if (name.find_first_of("$:#&~@%+") != std::string::npos)
   {
     throw(std::invalid_argument("Client name cannot start with " + std::string(1, name[0])));
   }

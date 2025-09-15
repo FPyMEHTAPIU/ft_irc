@@ -33,7 +33,6 @@ void validateClientName(std::string name);
 void validateCommand(const std::string &command);
 
 // utils.cpp
-bool startsWith(std::string str, std::string symbols);
 std::vector<std::string> split(const std::string &sentence, char sep);
 std::string strToLowercase(const std::string &str);
 void handleInput(std::string input, Server *server, int clientFd);
