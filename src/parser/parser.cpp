@@ -119,9 +119,8 @@ int validateArgs(int argc, char **argv)
 void validateCommand(const std::string &command)
 {
     const std::set<std::string> cmds = {
-        "pass", "nick", "user", "join", "part", "privmsg", "notice",
-        "mode", "invite", "kick", "topic", "names", "list", "oper",
-        "kill", "quit", "msg", "cap"};
+        "pass", "nick", "user", "join", "privmsg", "mode",
+        "invite", "kick", "topic", "quit", "msg", "cap", "ping"};
 
     std::string cmdLowercase(command.size(), '\0');
     std::transform(command.begin(), command.end(),
