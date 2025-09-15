@@ -268,34 +268,41 @@ void Server::handleClientData(int clientFd)
 
 void Server::handleClientWrite(int fd)
 {
-    std::shared_ptr<Client> client = _clients.at(fd);
-
-    if (!client->hasPendingMessages())
+    try
     {
-        disableWrite(fd);
-        return;
-    }
+        std::shared_ptr<Client> client = _clients.at(fd);
 
-    std::string &msg = client->frontMessage();
-    ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
-
-    if (sent < 0)
-    {
-        if (errno != EWOULDBLOCK && errno != EAGAIN)
+        if (!client->hasPendingMessages())
         {
-            std::cerr << "Send error on fd " << fd << ": " << strerror(errno) << "\n";
-            removeClient(fd);
+            disableWrite(fd);
+            return;
         }
-        return;
-    }
 
-    if ((size_t)sent == msg.size())
-    {
-        client->popMessage();
+        std::string &msg = client->frontMessage();
+        ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
+
+        if (sent < 0)
+        {
+            if (errno != EWOULDBLOCK && errno != EAGAIN)
+            {
+                std::cerr << "Send error on fd " << fd << ": " << strerror(errno) << "\n";
+                removeClient(fd);
+            }
+            return;
+        }
+
+        if ((size_t)sent == msg.size())
+        {
+            client->popMessage();
+        }
+        else
+        {
+            msg.erase(0, sent);
+        }
     }
-    else
+    catch (std::exception &e)
     {
-        msg.erase(0, sent);
+        std::cerr << "Exception when handling client write: " << e.what() << std::endl;
     }
 }
 
