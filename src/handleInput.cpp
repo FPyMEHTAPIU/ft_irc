@@ -2,36 +2,42 @@
 #include "commands/commands.hpp"
 #include "Server.hpp"
 
+std::vector<std::string> trimSplitInput(std::string &input, std::string &msg)
+{
+	// remove cariage return char
+	input.pop_back();
+	std::vector<std::string> args;
+	std::vector<std::string> splittedMsg = split(input, ':');
+
+	if (splittedMsg.size() > 1)
+	{
+		args = split(splittedMsg.at(0), ' ');
+		msg = splittedMsg.at(1);
+	}
+	else
+	{
+		args = split(input, ' ');
+	}
+
+	if (args.empty())
+		return args;
+
+	if (args.at(0).starts_with('/'))
+	{
+		args.at(0).erase(args.at(0).begin());
+	}
+	return args;
+}
+
 void handleInput(std::string input, Server *server, int clientFd)
 {
 	std::string result = "";
 	try
 	{
-		// remove garbage return char
-		input.pop_back();
-		std::vector<std::string> args;
-		std::vector<std::string> splittedMsg = split(input, ':');
 		std::string msg = "";
-
-		if (splittedMsg.size() > 1)
-		{
-			std::cout << "Debug: " << splittedMsg.at(0) << std::endl;
-			args = split(splittedMsg.at(0), ' ');
-			msg = splittedMsg.at(1);
-			std::cout << "msg: " << splittedMsg.at(1) << std::endl;
-		}
-		else
-		{
-			args = split(input, ' ');
-		}
-
+		std::vector<std::string> args = trimSplitInput(input, msg);
 		if (args.empty())
 			return;
-
-		if (startsWith(args[0], "/"))
-		{
-			args.at(0).erase(args.at(0).begin());
-		}
 
 		std::string cmdLowercase = strToLowercase(args.at(0));
 
@@ -56,7 +62,6 @@ void handleInput(std::string input, Server *server, int clientFd)
 			break;
 
 		case hash("join"):
-			std::cout << "joining..." << args.at(1) << std::endl;
 			result = handleJoin(server, args, client);
 			break;
 
@@ -90,7 +95,6 @@ void handleInput(std::string input, Server *server, int clientFd)
 		}
 		client->enqueueMessage(result);
 		server->enableWrite(clientFd);
-		// send(clientFd, result.c_str(), result.length(), 0);
 	}
 	catch (std::exception &e)
 	{
