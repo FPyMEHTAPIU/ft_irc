@@ -45,6 +45,8 @@ void handleInput(std::string input, Server *server, int clientFd)
 
 		std::shared_ptr<Client> client = server->getClients().at(clientFd);
 
+		std::string storedPassword = server->getPassword();
+
 		switch (hash(cmdLowercase.c_str(), cmdLowercase.size()))
 		{
 		case hash("nick"):
@@ -70,23 +72,29 @@ void handleInput(std::string input, Server *server, int clientFd)
 			return;
 
 		case hash("pass"):
+			std::cout << "[DEBUG] Received PASS command with password: " << args[1] << std::endl; // Log the received password
+
 			if (args.size() < 2)
+			{
 				result = "461 PASS :Not enough parameters\r\n";
-			try
-			{
-				validatePassword(args[1]);
 			}
-			catch (const std::exception &e)
+			else
 			{
-				result = std::string("464 PASS :") + e.what() + "\r\n";
+				try
+				{
+					// Debugging the password validation step
+					std::cout << "[DEBUG] Validating password..." << std::endl;
+					validatePasswordNew(args[1], storedPassword);
+					result = "Password accepted\r\n";
+					std::cout << "[DEBUG] Password accepted!" << std::endl;
+				}
+				catch (const std::exception &e)
+				{
+					std::cout << "[DEBUG] Password validation failed: " << e.what() << std::endl; // Log the error
+					result = std::string("464 PASS :") + e.what() + "\r\n";
+				}
 			}
-			if (args[1] != server->getPassword())
-				result = "464 PASS :Password incorrect\r\n";
-
-			// server->getClients()[clientFd].setAuthenticated(true); //when authentication has been set up
-			result = "Password accepted\r\n";
 			break;
-
 		case hash("ping"):
 			handlePing(args);
 			return;

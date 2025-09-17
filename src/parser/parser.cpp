@@ -20,6 +20,45 @@ void validatePassword(const std::string &password)
     }
 }
 
+void validatePasswordNew(const std::string &inputPassword, const std::string &storedPassword)
+{
+    // Trim and transform inputPassword
+    std::string passInput = inputPassword;
+    passInput.erase(0, passInput.find_first_not_of(" \t\r\n"));
+    passInput.erase(passInput.find_last_not_of(" \t\r\n") + 1); // trim trailing whitespace
+    std::transform(passInput.begin(), passInput.end(), passInput.begin(), ::tolower); // case insensitive
+
+    // Trim and transform storedPassword
+    std::string passStored = storedPassword;
+    passStored.erase(0, passStored.find_first_not_of(" \t\r\n"));
+    passStored.erase(passStored.find_last_not_of(" \t\r\n") + 1); // trim trailing whitespace
+    std::transform(passStored.begin(), passStored.end(), passStored.begin(), ::tolower); // case insensitive
+
+    // Validate the password against rules
+    if (passInput.empty())
+    {
+        throw std::out_of_range("Password cannot be empty");
+    }
+    else if (passInput.length() < PASSWORD_MIN_LENGTH)
+    {
+        throw std::out_of_range("Password must have at least " + std::to_string(PASSWORD_MIN_LENGTH) + " characters");
+    }
+    else if (passInput.length() > PASSWORD_MAX_LENGTH)
+    {
+        throw std::out_of_range("Password can have a maximum of " + std::to_string(PASSWORD_MAX_LENGTH) + " characters");
+    }
+    else if (passInput.find_first_of(" \t\n\r") != std::string::npos)
+    {
+        throw std::invalid_argument("Password cannot contain whitespaces");
+    }
+
+    // Check if the password matches
+    if (passInput != passStored)
+    {
+        throw std::invalid_argument("Password incorrect");
+    }
+}
+
 // Allowed special characters in nicknames: -[]\\`^{}
 // First character must be a letter or one of the specials
 // Allowed after first character: letters, digits and specials

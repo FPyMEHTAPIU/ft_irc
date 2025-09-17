@@ -21,6 +21,7 @@
 class Server;
 
 // parser.cpp
+void validatePasswordNew(const std::string &inputPassword, const std::string &storedPassword);
 void validatePassword(const std::string &password);
 int validateArgs(int argc, char **argv);
 int validatePort(const std::string &strPort);
