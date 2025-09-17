@@ -51,7 +51,8 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderFd, 
 			sender,
 			senderNick,
 			senderFd,
-			message};
+			message,
+			false};
 
 		// check message
 		if (message.empty())

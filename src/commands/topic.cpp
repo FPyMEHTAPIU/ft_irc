@@ -43,7 +43,8 @@ std::string handleTopic(Server *server, const std::vector<std::string> &args,
         client,
         client->getNick(),
         client->getFd(),
-        msg};
+        msg,
+        true};
 
     channel->broadcast(server, msgInfo);
     return msg;

@@ -29,6 +29,7 @@ struct messageInfo
     std::string senderNick;
     int senderFd;
     std::string message;
+    bool isCommand;
 };
 
 // parser.cpp
