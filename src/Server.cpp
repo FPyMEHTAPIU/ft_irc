@@ -279,6 +279,7 @@ void Server::handleClientWrite(int fd)
         }
 
         std::string &msg = client->frontMessage();
+        std::cout << "SENDING: " << msg << std::endl;
         ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
 
         if (sent < 0)

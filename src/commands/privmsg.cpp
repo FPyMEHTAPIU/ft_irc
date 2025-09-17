@@ -1,14 +1,5 @@
 #include "commands.hpp"
 
-struct messageInfo
-{
-	std::string target;
-	std::shared_ptr<Client> sender;
-	std::string senderNick;
-	int senderFd;
-	std::string message;
-};
-
 static void handleChannelMessage(Server *server, messageInfo msgInfo)
 {
 	std::shared_ptr<Channel> channel = server->getChannelByName(msgInfo.target);
@@ -19,16 +10,7 @@ static void handleChannelMessage(Server *server, messageInfo msgInfo)
 	}
 
 	// Broadcast to all members except sender
-	for (auto member : channel->getUsers())
-	{
-		int memberFd = member->getFd();
-		if (memberFd != msgInfo.senderFd)
-		{
-			std::string out = ":" + msgInfo.senderNick + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
-			member->enqueueMessage(out);
-			server->enableWrite(memberFd);
-		}
-	}
+	channel->broadcast(server, msgInfo);
 	return;
 }
 

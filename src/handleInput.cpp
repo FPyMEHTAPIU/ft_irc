@@ -90,6 +90,10 @@ void handleInput(std::string input, Server *server, int clientFd)
 		case hash("ping"):
 			handlePing(args);
 			return;
+
+		case hash("topic"):
+			result = handleTopic(server, args, msg, client);
+			break;
 		default:
 			break;
 		}

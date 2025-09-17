@@ -6,3 +6,5 @@ std::string handleUser(std::shared_ptr<Client> client, const std::vector<std::st
 std::string handleJoin(Server *server, const std::vector<std::string> &args, std::shared_ptr<Client> client);
 void handlePrivmsg(Server *server, std::vector<std::string> args, int senderFd, const std::string &message);
 std::string handlePing(const std::vector<std::string> &args);
+std::string handleTopic(Server *server, const std::vector<std::string> &args,
+                        std::string newTopic, std::shared_ptr<Client> client);

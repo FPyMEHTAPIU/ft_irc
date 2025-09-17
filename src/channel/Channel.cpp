@@ -22,7 +22,7 @@ Channel::Channel(std::string name, std::shared_ptr<Client> creator)
   _users.push_back(creator);
   _topic = "";
   _isInviteOnly = false;
-  _isTopicChangeMode = false;
+  _isTopicRestricted = false;
   _userLimit = 0;
 }
 
@@ -58,9 +58,9 @@ bool Channel::getIsInviteOnly() const
   return _isInviteOnly;
 }
 
-bool Channel::getIsTopicChangeMode() const
+bool Channel::isTopicRestricted() const
 {
-  return _isTopicChangeMode;
+  return _isTopicRestricted;
 }
 
 size_t Channel::getUserLimit() const
@@ -80,6 +80,32 @@ bool Channel::isMember(std::shared_ptr<Client> client) const
   return false;
 }
 
+bool Channel::isOperator(std::shared_ptr<Client> client) const
+{
+  for (auto &oper : _operators)
+  {
+    if (oper->getNick() == client->getNick())
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+void Channel::broadcast(Server *server, messageInfo msgInfo)
+{
+  for (auto member : _users)
+  {
+    int memberFd = member->getFd();
+    if (memberFd != msgInfo.senderFd)
+    {
+      std::string out = ":" + msgInfo.senderNick + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
+      member->enqueueMessage(out);
+      server->enableWrite(memberFd);
+    }
+  }
+}
+
 void Channel::setName(std::string newName)
 {
   _name = newName;
@@ -87,7 +113,7 @@ void Channel::setName(std::string newName)
 
 void Channel::setTopic(std::string newTopic)
 {
-  if (_isTopicChangeMode)
+  if (!_isTopicRestricted)
   {
     _topic = newTopic;
   }
@@ -112,9 +138,9 @@ void Channel::setIsInviteOnly(bool newMode)
   _isInviteOnly = newMode;
 }
 
-void Channel::setIsTopicChangeMode(bool newMode)
+void Channel::setIsTopicRestricted(bool newMode)
 {
-  _isTopicChangeMode = newMode;
+  _isTopicRestricted = newMode;
 }
 
 void Channel::setUserLimit(int newLimit)

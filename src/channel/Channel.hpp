@@ -3,8 +3,11 @@
 #include <vector>
 #include <memory>
 #include "../client/Client.hpp"
+#include "../irc.hpp"
 
 class Client;
+class Server;
+struct messageInfo;
 
 class Channel
 {
@@ -16,7 +19,7 @@ private:
 
   // Modes
   bool _isInviteOnly;
-  bool _isTopicChangeMode;
+  bool _isTopicRestricted;
   // if 0 there's no limit
   size_t _userLimit;
 
@@ -32,9 +35,11 @@ public:
   std::string getName() const;
   std::string getTopic() const;
   bool getIsInviteOnly() const;
-  bool getIsTopicChangeMode() const;
+  bool isTopicRestricted() const;
   size_t getUserLimit() const;
   bool isMember(std::shared_ptr<Client> client) const;
+  bool isOperator(std::shared_ptr<Client> client) const;
+  void broadcast(Server *server, messageInfo msgInfo);
 
   // Only for operators
   void setName(std::string newName);
@@ -42,6 +47,6 @@ public:
   void addUser(std::shared_ptr<Client> newUser);
   void addOperator(std::shared_ptr<Client> newOperator);
   void setIsInviteOnly(bool newMode);
-  void setIsTopicChangeMode(bool newMode);
+  void setIsTopicRestricted(bool newMode);
   void setUserLimit(int newLimit);
 };
