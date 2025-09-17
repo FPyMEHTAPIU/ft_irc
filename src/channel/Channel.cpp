@@ -99,7 +99,15 @@ void Channel::broadcast(Server *server, messageInfo msgInfo)
     int memberFd = member->getFd();
     if (memberFd != msgInfo.senderFd)
     {
-      std::string out = ":" + msgInfo.senderNick + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
+      std::string out = "";
+      if (msgInfo.isCommand)
+      {
+        out = msgInfo.message;
+      }
+      else
+      {
+        out = ":" + msgInfo.senderNick + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
+      }
       member->enqueueMessage(out);
       server->enableWrite(memberFd);
     }

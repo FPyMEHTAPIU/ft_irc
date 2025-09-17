@@ -20,13 +20,21 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, std
 	{
 		std::shared_ptr<Channel> channel = server->getChannelByName(channelName);
 		channel->addUser(client);
+		std::string msg = ":" + client->getNick() + " JOIN " + channelName + "\r\n";
+		messageInfo msgInfo = {
+			channel->getName(),
+			client,
+			client->getNick(),
+			client->getFd(),
+			msg,
+			true};
+		channel->broadcast(server, msgInfo);
+		return msg;
 	}
 	catch (...)
 	{
 		std::shared_ptr<Channel> newChannel = std::make_shared<Channel>(channelName, client);
 		server->addChannel(channelName, newChannel);
+		return ":" + client->getNick() + " JOIN " + channelName + "\r\n";
 	}
-
-	// Only send a proper JOIN message once
-	return ":" + client->getNick() + " JOIN " + channelName + "\r\n";
 }
