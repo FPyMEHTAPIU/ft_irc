@@ -4,7 +4,7 @@
 
 std::vector<std::string> trimSplitInput(std::string &input, std::string &msg)
 {
-	// remove cariage return char
+	// remove carriage return characters
 	input.pop_back();
 	std::vector<std::string> args;
 	std::vector<std::string> splittedMsg = split(input, ':');
@@ -29,7 +29,7 @@ std::vector<std::string> trimSplitInput(std::string &input, std::string &msg)
 	return args;
 }
 
-void handleInput(std::string input, Server *server, int clientFd)
+void handleInput(std::string input, Server *server, Logger *logger, int clientFd)
 {
 	std::string result = "";
 	try
@@ -57,7 +57,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 			break;
 
 		case hash("user"):
-			if (args.size() < 4) // RFC requires 4 params
+			if (args.size() < 4)
 				result = "461 USER :Not enough parameters\r\n";
 			else
 				result = handleUser(client, args, msg);
@@ -72,8 +72,6 @@ void handleInput(std::string input, Server *server, int clientFd)
 			return;
 
 		case hash("pass"):
-			std::cout << "[DEBUG] Received PASS command with password: " << args[1] << std::endl; // Log the received password
-
 			if (args.size() < 2)
 			{
 				result = "461 PASS :Not enough parameters\r\n";
@@ -82,15 +80,14 @@ void handleInput(std::string input, Server *server, int clientFd)
 			{
 				try
 				{
-					// Debugging the password validation step
-					std::cout << "[DEBUG] Validating password..." << std::endl;
-					validatePasswordNew(args[1], storedPassword);
+					logger->debug(AUTH, "Validating password...");
+					validateClientPassword(args[1], storedPassword);
 					result = "Password accepted\r\n";
-					std::cout << "[DEBUG] Password accepted!" << std::endl;
+					logger->info(AUTH, "Authenticated " + client->getNick() + "!");
 				}
 				catch (const std::exception &e)
 				{
-					std::cout << "[DEBUG] Password validation failed: " << e.what() << std::endl; // Log the error
+					logger->error(AUTH, "Password validation failed");
 					result = std::string("464 PASS :") + e.what() + "\r\n";
 				}
 			}

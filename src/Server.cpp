@@ -262,7 +262,7 @@ void Server::handleClientData(int clientFd)
 
     for (const std::string &cmd : cmds)
     {
-        handleInput(cmd, this, clientFd);
+        handleInput(cmd, this, this->_logger, clientFd);
     }
 }
 

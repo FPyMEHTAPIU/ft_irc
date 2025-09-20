@@ -3,10 +3,12 @@
 #include <set>
 #include <vector>
 #include <memory>
+#include <cstring>
 #include <algorithm>
 #include "Server.hpp"
 #include "client/Client.hpp"
 #include "channel/Channel.hpp"
+#include "Logger.hpp"
 
 #define ANSI_RED "\033[0;91m"
 #define ANSI_RESET "\033[0;39m"
@@ -21,7 +23,7 @@
 class Server;
 
 // parser.cpp
-void validatePasswordNew(const std::string &inputPassword, const std::string &storedPassword);
+void validateClientPassword(const std::string &inputPassword, const std::string &storedPassword);
 void validatePassword(const std::string &password);
 int validateArgs(int argc, char **argv);
 int validatePort(const std::string &strPort);
@@ -36,7 +38,7 @@ void validateCommand(const std::string &command);
 // utils.cpp
 std::vector<std::string> split(const std::string &sentence, char sep);
 std::string strToLowercase(const std::string &str);
-void handleInput(std::string input, Server *server, int clientFd);
+void handleInput(std::string input, Server *server, Logger *logger, int clientFd);
 
 // These `hash` fucntions are for using `std::string` in `switch`
 constexpr uint32_t hash(const char *data, size_t size) noexcept
