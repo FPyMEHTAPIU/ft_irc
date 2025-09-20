@@ -4,10 +4,18 @@
 #include <fstream>
 #include <sstream>
 
+#define ANSI_RED "\033[0;91m"
+#define ANSI_ORANGE "\e[0m\e[38;5;202m"
+#define ANSI_YELLOW "\033[0;93m"
+#define ANSI_GREEN "\033[0;92m"
+#define ANSI_BLUE "\033[0;94m"
+#define ANSI_PURPLE "\e[0m\e[38;5;171m"
+
 enum LogLevel
 {
     DEBUG,
     INFO,
+    SUCCESS,
     WARNING,
     ERROR,
     FATAL
@@ -37,6 +45,7 @@ public:
 
     void log(LogLevel level, Component component, const std::string &message);
     void debug(Component component, const std::string &message);
+    void success(Component component, const std::string &message);
     void info(Component component, const std::string &message);
     void warning(Component component, const std::string &message);
     void error(Component component, const std::string &message);

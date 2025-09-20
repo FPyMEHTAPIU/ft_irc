@@ -9,14 +9,22 @@
 #include <string>
 #include <algorithm> // for std::find_if
 #include <sys/fcntl.h>
+#include <termios.h>
+#include <csignal>
 
+volatile bool Server::_terminate = false;
+
+// Server::Server(int port, std::string password, Logger *logger)
+//     : _PORT(port), _status(false), _PASSWORD(password), _serverSocket(-1), _logger(logger)
 Server::Server(int port, std::string password, Logger *logger)
-    : _PORT(port), _status(false), _PASSWORD(password), _serverSocket(-1), _logger(logger)
+    : _PORT(port), _PASSWORD(password), _serverSocket(-1), _logger(logger)
 {
     if (!_logger)
     {
         throw std::invalid_argument("Logger cannot be null");
     }
+
+    signalSetup(true);
 
     _logger->info(SERVER, "Initializing server on port " + std::to_string(port));
     setupSocket();
@@ -27,6 +35,7 @@ Server::Server(int port, std::string password, Logger *logger)
 
 Server::~Server()
 {
+    signalSetup(false);
     stop();
 }
 
@@ -130,6 +139,37 @@ void Server::listenSocket()
     _logger->info(SERVER, "Server listening with backlog " + std::to_string(SERVER_BACKLOG));
 }
 
+void Server::signalSetup(bool start) noexcept
+{
+    static termios newTerminal;
+    static termios oldTerminal;
+
+    if (start)
+    {
+        signal(SIGINT, Server::signalHandler);
+        signal(SIGQUIT, Server::signalHandler);
+
+        tcgetattr(STDIN_FILENO, &oldTerminal);
+        newTerminal = oldTerminal;
+        newTerminal.c_lflag &= ~ECHOCTL;
+        oldTerminal.c_lflag |= ECHOCTL;
+        tcsetattr(STDIN_FILENO, TCSANOW, &newTerminal);
+    }
+    else
+    {
+        signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
+
+        tcsetattr(STDIN_FILENO, TCSANOW, &oldTerminal);
+    }
+}
+
+void Server::signalHandler(int signum)
+{
+    if (signum == SIGQUIT || signum == SIGINT)
+        Server::_terminate = true;
+}
+
 void Server::start()
 {
     _logger->info(SERVER, "Starting IRC server on port " + std::to_string(_PORT));
@@ -145,15 +185,22 @@ void Server::start()
 
 void Server::run()
 {
-    std::cout << "IRC server is running..." << std::endl;
-    _status = true;
+    _logger->success(SERVER, "IRC server running on port " + std::to_string(_PORT));
+    // _status = true;
 
-    while (_status)
+    // while (_status)
+    while (!_terminate)
     {
         int pollRes = poll(_pollFds.data(), _pollFds.size(), 1000); // 1-second tick
 
         if (pollRes < 0)
-            throw std::runtime_error("Poll failed: " + std::string(strerror(errno)));
+        {
+            if (errno == EINTR)
+            {
+                _logger->info(SERVER, "Received shutdown signal");
+                break;
+            }
+        }
         if (pollRes == 0)
             continue;
 
@@ -332,11 +379,11 @@ void Server::stop()
         _serverSocket = -1;
     }
 
-    std::cout << "Closing all fds, except the server socket" << std::endl;
+    _logger->debug(SERVER, "Closing all fds, except the server socket");
     for (size_t i = 1; i < _pollFds.size(); ++i)
         close(_pollFds[i].fd);
 
     _pollFds.clear();
 
-    std::cout << "IRC server stopped." << std::endl;
+    _logger->success(SERVER, "Successfully shut down IRC server.");
 }

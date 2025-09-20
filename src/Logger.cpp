@@ -57,19 +57,22 @@ void Logger::log(LogLevel level, Component component, const std::string &message
     switch (level)
     {
     case DEBUG:
-        levelStr = "DEBUG";
+        levelStr = ANSI_PURPLE "DEBUG" ANSI_RESET;
         break;
     case INFO:
-        levelStr = "INFO";
+        levelStr = ANSI_BLUE "INFO" ANSI_RESET;
+        break;
+    case SUCCESS:
+        levelStr = ANSI_GREEN "SUCCESS" ANSI_RESET;
         break;
     case WARNING:
-        levelStr = "WARNING";
+        levelStr = ANSI_YELLOW "WARNING" ANSI_RESET;
         break;
     case ERROR:
-        levelStr = "ERROR";
+        levelStr = ANSI_ORANGE "ERROR" ANSI_RESET;
         break;
     case FATAL:
-        levelStr = "FATAL";
+        levelStr = ANSI_RED "FATAL" ANSI_RESET;
         break;
     }
 
@@ -99,7 +102,11 @@ void Logger::log(LogLevel level, Component component, const std::string &message
         break;
     }
 
-    std::string formattedMessage = "[" + getCurrentTimestamp() + "] [" + levelStr + "] [" + componentStr + "] " + message;
+    std::string formattedMessage;
+    if (levelStr == "SUCCESS")
+        formattedMessage = "[" + getCurrentTimestamp() + "] [" + levelStr + "] [" + componentStr + "] " + message;
+    else
+        formattedMessage = "[" + getCurrentTimestamp() + "] [" + levelStr + "]\t[" + componentStr + "] " + message;
     writeLog(formattedMessage);
 }
 
@@ -111,6 +118,11 @@ void Logger::debug(Component component, const std::string &message)
 void Logger::info(Component component, const std::string &message)
 {
     log(INFO, component, message);
+}
+
+void Logger::success(Component component, const std::string &message)
+{
+    log(SUCCESS, component, message);
 }
 
 void Logger::warning(Component component, const std::string &message)

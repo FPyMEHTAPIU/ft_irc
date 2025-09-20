@@ -24,8 +24,9 @@ class Server
 {
 private:
   const int _PORT;
-  bool _status;
+  // bool _status;
   const std::string _PASSWORD;
+  static volatile bool _terminate;
 
   int _serverSocket;
   Logger *_logger;
@@ -45,6 +46,9 @@ public:
   Server &operator=(Server const &server) = delete;
   Server(int port, std::string password, Logger *logger);
   ~Server();
+
+  void signalSetup(bool start) noexcept;
+  static void signalHandler(int signum);
 
   void start();
   void run();
