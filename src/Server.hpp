@@ -24,7 +24,6 @@ class Server
 {
 private:
   const int _PORT;
-  // bool _status;
   const std::string _PASSWORD;
   static volatile bool _terminate;
 
@@ -47,7 +46,7 @@ public:
   Server(int port, std::string password, Logger *logger);
   ~Server();
 
-  void signalSetup(bool start) noexcept;
+  void setupSignals(bool serverStart) noexcept;
   static void signalHandler(int signum);
 
   void start();
