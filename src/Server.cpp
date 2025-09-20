@@ -24,7 +24,7 @@ Server::Server(int port, std::string password, Logger *logger)
         throw std::invalid_argument("Logger cannot be null");
     }
 
-    signalSetup(true);
+    setupSignals(true);
 
     _logger->info(SERVER, "Initializing server on port " + std::to_string(port));
     setupSocket();
@@ -35,7 +35,7 @@ Server::Server(int port, std::string password, Logger *logger)
 
 Server::~Server()
 {
-    signalSetup(false);
+    setupSignals(false);
     stop();
 }
 
@@ -139,16 +139,15 @@ void Server::listenSocket()
     _logger->info(SERVER, "Server listening with backlog " + std::to_string(SERVER_BACKLOG));
 }
 
-void Server::signalSetup(bool start) noexcept
+void Server::setupSignals(bool serverStart) noexcept
 {
     static termios newTerminal;
     static termios oldTerminal;
 
-    if (start)
+    if (serverStart)
     {
         signal(SIGINT, Server::signalHandler);
         signal(SIGQUIT, Server::signalHandler);
-
         tcgetattr(STDIN_FILENO, &oldTerminal);
         newTerminal = oldTerminal;
         newTerminal.c_lflag &= ~ECHOCTL;
@@ -159,7 +158,6 @@ void Server::signalSetup(bool start) noexcept
     {
         signal(SIGINT, SIG_DFL);
         signal(SIGQUIT, SIG_DFL);
-
         tcsetattr(STDIN_FILENO, TCSANOW, &oldTerminal);
     }
 }
@@ -186,9 +184,7 @@ void Server::start()
 void Server::run()
 {
     _logger->success(SERVER, "IRC server running on port " + std::to_string(_PORT));
-    // _status = true;
 
-    // while (_status)
     while (!_terminate)
     {
         int pollRes = poll(_pollFds.data(), _pollFds.size(), 1000); // 1-second tick
