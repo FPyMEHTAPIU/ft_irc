@@ -8,3 +8,5 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderFd, 
 std::string handlePing(const std::vector<std::string> &args);
 std::string handleTopic(Server *server, const std::vector<std::string> &args,
                         std::string newTopic, std::shared_ptr<Client> client);
+std::string handleMode(Server *server, const std::vector<std::string> &args,
+                       std::shared_ptr<Client> client);

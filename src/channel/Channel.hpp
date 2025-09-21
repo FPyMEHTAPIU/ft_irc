@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <algorithm>
 #include "../client/Client.hpp"
 #include "../irc.hpp"
 
@@ -14,6 +15,7 @@ class Channel
 private:
   std::string _name;
   std::string _topic;
+  std::string _key;
   std::vector<std::shared_ptr<Client>> _users;
   std::vector<std::shared_ptr<Client>> _operators;
 
@@ -42,10 +44,13 @@ public:
   void broadcast(Server *server, messageInfo msgInfo);
 
   // Only for operators
+  std::string getKey() const;
+  void setKey(std::string newKey);
   void setName(std::string newName);
   void setTopic(std::string newName);
   void addUser(std::shared_ptr<Client> newUser);
   void addOperator(std::shared_ptr<Client> newOperator);
+  void removeOperator(std::shared_ptr<Client> oldOperator);
   void setIsInviteOnly(bool newMode);
   void setIsTopicRestricted(bool newMode);
   void setUserLimit(int newLimit);
