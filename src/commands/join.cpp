@@ -22,15 +22,10 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, std
 		std::shared_ptr<Channel> channel = server->getChannelByName(channelName);
 		channel->addUser(client);
 		std::string msg = ":" + nickname + " JOIN " + channelName + "\r\n";
-		messageInfo msgInfo = {
-			channel->getName(),
-			client,
-			nickname,
-			client->getFd(),
-			msg,
-			true};
-		channel->broadcast(server, msgInfo);
+
+		channel->broadcast(server, msg, -1);
 		std::string topic = channel->getTopic();
+		msg = "";
 		if (!topic.empty())
 		{
 			msg += "332 " + nickname + " " + channelName + " :" + topic + "\r\n";

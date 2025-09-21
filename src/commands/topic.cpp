@@ -37,14 +37,6 @@ std::string handleTopic(Server *server, const std::vector<std::string> &args,
 
     std::string msg = ":" + nickname + " TOPIC " + channelName + " :" + newTopic + "\r\n";
 
-    messageInfo msgInfo = {
-        channel->getName(),
-        client,
-        nickname,
-        client->getFd(),
-        msg,
-        true};
-
-    channel->broadcast(server, msgInfo);
-    return msg;
+    channel->broadcast(server, msg, -1);
+    return "";
 }

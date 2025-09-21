@@ -9,8 +9,8 @@ static void handleChannelMessage(Server *server, messageInfo msgInfo)
 		throw std::invalid_argument(":ircserv 404 " + msgInfo.senderNick + " " + msgInfo.target + " :Cannot send to channel\r\n");
 	}
 
-	// Broadcast to all members except sender
-	channel->broadcast(server, msgInfo);
+	std::string msg = ":" + msgInfo.senderNick + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
+	channel->broadcast(server, msg, msgInfo.senderFd);
 	return;
 }
 

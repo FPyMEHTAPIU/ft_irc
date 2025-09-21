@@ -41,7 +41,7 @@ public:
   size_t getUserLimit() const;
   bool isMember(std::shared_ptr<Client> client) const;
   bool isOperator(std::shared_ptr<Client> client) const;
-  void broadcast(Server *server, messageInfo msgInfo);
+  void broadcast(Server *server, const std::string &rawMessage, int excludeFd);
 
   // Only for operators
   std::string getKey() const;
