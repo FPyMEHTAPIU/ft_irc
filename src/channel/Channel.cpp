@@ -94,17 +94,33 @@ bool Channel::isOperator(std::shared_ptr<Client> client) const
 
 void Channel::broadcast(Server *server, const std::string &rawMessage, int excludeFd)
 {
-    for (auto &member : _users)
+  for (auto &member : _users)
+  {
+    int memberFd = member->getFd();
+    if (memberFd != excludeFd)
     {
-        int memberFd = member->getFd();
-        if (memberFd != excludeFd)
-        {
-            member->enqueueMessage(rawMessage);
-            server->enableWrite(memberFd);
-        }
+      member->enqueueMessage(rawMessage);
+      server->enableWrite(memberFd);
     }
+  }
 }
 
+std::string Channel::getNamesReply(const std::string &requesterNick) const
+{
+  std::string names;
+  for (auto &user : _users)
+  {
+    if (isOperator(user))
+      names += "@" + user->getNick() + " ";
+    else
+      names += user->getNick() + " ";
+  }
+  if (!names.empty())
+    names.pop_back();
+
+  return ":ircserv 353 " + requesterNick + " = " + _name + " :" + names + "\r\n" +
+         ":ircserv 366 " + requesterNick + " " + _name + " :End of /NAMES list\r\n";
+}
 
 std::string Channel::getKey() const
 {
@@ -145,17 +161,17 @@ void Channel::addOperator(std::shared_ptr<Client> newOperator)
 
 void Channel::removeOperator(std::shared_ptr<Client> oldOperator)
 {
-    auto it = std::find_if(
-        _operators.begin(),
-        _operators.end(),
-        [&](const std::shared_ptr<Client>& op) {
-            return op->getFd() == oldOperator->getFd();
-        });
+  auto it = std::find_if(
+      _operators.begin(),
+      _operators.end(),
+      [&](const std::shared_ptr<Client> &op)
+      {
+        return op->getFd() == oldOperator->getFd();
+      });
 
-    if (it != _operators.end())
-        _operators.erase(it);
+  if (it != _operators.end())
+    _operators.erase(it);
 }
-
 
 void Channel::setIsInviteOnly(bool newMode)
 {
