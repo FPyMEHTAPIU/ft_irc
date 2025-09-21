@@ -116,20 +116,12 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 		}
 	}
 
-	// Broadcast the mode change to channel users
-	std::string msg = ":" + nickname + " MODE " + channelName + " " + modeStr;
-	for (size_t i = 3; i < args.size(); i++)
-		msg += " " + args[i];
-	msg += "\r\n";
+	std::string msg = ":" + nickname + " MODE " + channelName + " " + modeStr + "\r\n";
+	// for (size_t i = 3; i < args.size(); i++)
+	// 	msg += " " + args[i];
+	// msg += "\r\n";
 
-	messageInfo msgInfo = {
-		channel->getName(),
-		client,
-		nickname,
-		client->getFd(),
-		msg,
-		true};
 
-	channel->broadcast(server, msgInfo);
+	channel->broadcast(server, msg, -1);
 	return "";
 }

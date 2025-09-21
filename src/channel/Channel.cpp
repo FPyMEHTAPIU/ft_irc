@@ -92,27 +92,19 @@ bool Channel::isOperator(std::shared_ptr<Client> client) const
   return false;
 }
 
-void Channel::broadcast(Server *server, messageInfo msgInfo)
+void Channel::broadcast(Server *server, const std::string &rawMessage, int excludeFd)
 {
-  for (auto member : _users)
-  {
-    int memberFd = member->getFd();
-    if (memberFd != msgInfo.senderFd)
+    for (auto &member : _users)
     {
-      std::string out = "";
-      if (msgInfo.isCommand)
-      {
-        out = msgInfo.message;
-      }
-      else
-      {
-        out = ":" + msgInfo.senderNick + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
-      }
-      member->enqueueMessage(out);
-      server->enableWrite(memberFd);
+        int memberFd = member->getFd();
+        if (memberFd != excludeFd)
+        {
+            member->enqueueMessage(rawMessage);
+            server->enableWrite(memberFd);
+        }
     }
-  }
 }
+
 
 std::string Channel::getKey() const
 {
