@@ -8,6 +8,7 @@ std::string handleTopic(Server *server, const std::vector<std::string> &args,
 
     std::string channelName = args.at(1);
     std::shared_ptr<Channel> channel;
+    std::string nickname = client->getNick();
 
     try
     {
@@ -15,16 +16,14 @@ std::string handleTopic(Server *server, const std::vector<std::string> &args,
     }
     catch (...)
     {
-        return "403 " + client->getNick() + " " + channelName + " :No such channel\r\n";
+        return "403 " + nickname + " " + channelName + " :No such channel\r\n";
     }
 
-    // If only 2 args → query topic
     if (args.size() == 1)
     {
         if (channel->getTopic().empty())
-            return "331 " + client->getNick() + " " + channelName + " :No topic is set\r\n";
-        else
-            return "332 " + client->getNick() + " " + channelName + " :" + channel->getTopic() + "\r\n";
+            return "331 " + nickname + " " + channelName + " :No topic is set\r\n";
+        return "332 " + nickname + " " + channelName + " :" + channel->getTopic() + "\r\n";
     }
 
     // Remove leading colon if present
@@ -32,16 +31,16 @@ std::string handleTopic(Server *server, const std::vector<std::string> &args,
         newTopic = newTopic.substr(1);
 
     if (channel->isTopicRestricted() && !channel->isOperator(client))
-        return "482 " + client->getNick() + " " + channelName + " :You're not channel operator\r\n";
+        return "482 " + nickname + " " + channelName + " :You're not channel operator\r\n";
 
     channel->setTopic(newTopic);
 
-    std::string msg = ":" + client->getNick() + " TOPIC " + channelName + " :" + newTopic + "\r\n";
+    std::string msg = ":" + nickname + " TOPIC " + channelName + " :" + newTopic + "\r\n";
 
     messageInfo msgInfo = {
         channel->getName(),
         client,
-        client->getNick(),
+        nickname,
         client->getFd(),
         msg,
         true};

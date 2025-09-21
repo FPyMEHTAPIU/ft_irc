@@ -11,30 +11,36 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, std
 		return "461 JOIN :Not enough parameters\r\n";
 
 	std::string channelName = args.at(1);
+	std::string nickname = client->getNick();
 	if (!isValidChannelName(channelName))
 	{
-		return "476 " + client->getNick() + " " + channelName + " :Bad Channel Mask\r\n";
+		return "476 " + nickname + " " + channelName + " :Bad Channel Mask\r\n";
 	}
 
 	try
 	{
 		std::shared_ptr<Channel> channel = server->getChannelByName(channelName);
 		channel->addUser(client);
-		std::string msg = ":" + client->getNick() + " JOIN " + channelName + "\r\n";
+		std::string msg = ":" + nickname + " JOIN " + channelName + "\r\n";
 		messageInfo msgInfo = {
 			channel->getName(),
 			client,
-			client->getNick(),
+			nickname,
 			client->getFd(),
 			msg,
 			true};
 		channel->broadcast(server, msgInfo);
+		std::string topic = channel->getTopic();
+		if (!topic.empty())
+		{
+			msg += "332 " + nickname + " " + channelName + " :" + topic + "\r\n";
+		}
 		return msg;
 	}
 	catch (...)
 	{
 		std::shared_ptr<Channel> newChannel = std::make_shared<Channel>(channelName, client);
 		server->addChannel(channelName, newChannel);
-		return ":" + client->getNick() + " JOIN " + channelName + "\r\n";
+		return ":" + nickname + " JOIN " + channelName + "\r\n";
 	}
 }

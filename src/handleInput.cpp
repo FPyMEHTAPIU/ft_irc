@@ -96,7 +96,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 			break;
 
 		case hash("mode"):
-			handleMode(server, args, client);
+			result = handleMode(server, args, client);
 			break;
 		default:
 			break;

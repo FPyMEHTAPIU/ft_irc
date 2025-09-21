@@ -8,6 +8,7 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 
 	std::string channelName = args.at(1);
 	std::shared_ptr<Channel> channel;
+	std::string nickname = client->getNick();
 
 	try
 	{
@@ -15,10 +16,9 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 	}
 	catch (...)
 	{
-		return "403 " + client->getNick() + " " + channelName + " :No such channel\r\n";
+		return "403 " + nickname + " " + channelName + " :No such channel\r\n";
 	}
 
-	// If only "MODE #chan" → reply with current modes
 	if (args.size() == 2)
 	{
 		std::string modes = "+";
@@ -30,13 +30,13 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			modes += "k";
 		if (channel->getUserLimit() > 0)
 			modes += "l";
-		return "324 " + client->getNick() + " " + channelName + " " + modes + "\r\n";
+		return "324 " + nickname + " " + channelName + " " + modes + "\r\n";
 	}
 
 	// Require operator
 	if (!channel->isOperator(client))
 	{
-		return "482 " + client->getNick() + " " + channelName + " :You're not channel operator\r\n";
+		return "482 " + nickname + " " + channelName + " :You're not channel operator\r\n";
 	}
 
 	// MODE changes
@@ -84,11 +84,11 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			if (argIndex >= args.size())
 				return "461 MODE :Not enough parameters\r\n";
 			{
-				std::string nick = args[argIndex++];
-				std::shared_ptr<Client> target = server->getClientByNick(nick, client->getNick());
+				std::string targetNick = args[argIndex++];
+				std::shared_ptr<Client> target = server->getClientByNick(targetNick, nickname);
 				if (!target)
 				{
-					return "401 " + client->getNick() + " " + nick + " :No such nick\r\n";
+					return "401 " + nickname + " " + targetNick + " :No such nick\r\n";
 				}
 				if (adding)
 					channel->addOperator(target);
@@ -112,12 +112,12 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			break;
 
 		default:
-			return "472 " + client->getNick() + " " + std::string(1, c) + " :is unknown mode char\r\n";
+			return "472 " + nickname + " " + std::string(1, c) + " :is unknown mode char\r\n";
 		}
 	}
 
 	// Broadcast the mode change to channel users
-	std::string msg = ":" + client->getNick() + " MODE " + channelName + " " + modeStr;
+	std::string msg = ":" + nickname + " MODE " + channelName + " " + modeStr;
 	for (size_t i = 3; i < args.size(); i++)
 		msg += " " + args[i];
 	msg += "\r\n";
@@ -125,7 +125,7 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 	messageInfo msgInfo = {
 		channel->getName(),
 		client,
-		client->getNick(),
+		nickname,
 		client->getFd(),
 		msg,
 		true};
