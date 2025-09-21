@@ -99,6 +99,10 @@ void handleInput(std::string input, Server *server, Logger *logger, int clientFd
 		case hash("topic"):
 			result = handleTopic(server, args, msg, client);
 			break;
+
+		case hash("mode"):
+			handleMode(server, args, client);
+			break;
 		default:
 			break;
 		}

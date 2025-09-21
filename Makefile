@@ -1,4 +1,4 @@
-#colors
+# colors
 DEF_COLOR = \033[0;39m
 GRAY = \033[0;90m
 RED = \033[0;91m
@@ -15,6 +15,7 @@ NAME = ircserv
 # Directories
 SRC_DIR 		=	src
 OBJ_DIR 		=	obj
+INCLUDE_DIR      = include
 
 CHANNEL_DIR = channel
 CLIENT_DIR = client
@@ -30,6 +31,7 @@ CLIENT_FILES = \
 
 COMMANDS_FILES = \
 	join.cpp \
+	mode.cpp \
 	nick.cpp \
 	ping.cpp \
 	privmsg.cpp \
@@ -55,29 +57,36 @@ SRC_FILES = \
 	main.cpp \
 	Logger.cpp
 
-
-SRC				=	$(addprefix $(SRC_DIR)/, $(SRC_FILES))
+SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
 # Object files
-OBJ 			=	$(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
+OBJ = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
 
+# Toolchain
 CXX = c++
-CXXFLAGS = -std=c++20 -Wall -Werror -Wextra -O3 -g
+
+# Flags: use -MMD -MP to generate .d dependency files automatically
+CPPFLAGS += -I$(INCLUDE_DIR)
+CXXFLAGS += -std=c++20 -Wall -Werror -Wextra -g -MMD -MP
 
 RM = rm -rf
 
-.PHONY = all clean fclean re test
+.PHONY: all clean fclean re test
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@echo "$(BLUE)🔨 Compiling ircserv...$(DEF_COLOR)"
+	@echo "$(BLUE)🔨 Linking $(NAME)...$(DEF_COLOR)"
 	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 	@echo "$(GREEN)🥳 Success! Run with ./$(NAME) [port] [password]$(DEF_COLOR)"
 
-$(OBJ_DIR)/%.o:	$(SRC_DIR)/%.cpp
+# Compile .cpp -> .o and create obj directories as needed
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+# include dependency files (auto-generated .d). Use '-' so make won't stop if some .d missing
+-include $(OBJ:.o=.d)
 
 clean:
 	@echo "$(YELLOW)🚽 Deleting object files...$(DEF_COLOR)"

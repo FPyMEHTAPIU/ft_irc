@@ -114,6 +114,16 @@ void Channel::broadcast(Server *server, messageInfo msgInfo)
   }
 }
 
+std::string Channel::getKey() const
+{
+  return _key;
+}
+
+void Channel::setKey(std::string newKey)
+{
+  _key = newKey;
+}
+
 void Channel::setName(std::string newName)
 {
   _name = newName;
@@ -140,6 +150,20 @@ void Channel::addOperator(std::shared_ptr<Client> newOperator)
 {
   _operators.push_back(newOperator);
 }
+
+void Channel::removeOperator(std::shared_ptr<Client> oldOperator)
+{
+    auto it = std::find_if(
+        _operators.begin(),
+        _operators.end(),
+        [&](const std::shared_ptr<Client>& op) {
+            return op->getFd() == oldOperator->getFd();
+        });
+
+    if (it != _operators.end())
+        _operators.erase(it);
+}
+
 
 void Channel::setIsInviteOnly(bool newMode)
 {
