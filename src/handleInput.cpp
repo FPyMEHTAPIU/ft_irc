@@ -88,8 +88,8 @@ void handleInput(std::string input, Server *server, int clientFd)
 			break;
 
 		case hash("ping"):
-			handlePing(args);
-			return;
+			result = handlePing(args);
+			break;
 
 		case hash("topic"):
 			result = handleTopic(server, args, msg, client);

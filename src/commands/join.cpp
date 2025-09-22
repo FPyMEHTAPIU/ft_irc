@@ -30,8 +30,8 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, std
 		if (!topic.empty())
 		{
 			msg += "332 " + nickname + " " + channelName + " :" + topic + "\r\n";
-			msg += channel->getNamesReply(nickname);
 		}
+		msg += channel->getNamesReply(nickname);
 		return msg;
 	}
 	catch (...)
