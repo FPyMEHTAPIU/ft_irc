@@ -45,6 +45,7 @@ public:
 
   std::string getNick() const { return _nick; }
   std::string getUsername() const { return _username; }
+  std::string getRealName() const { return _realname; }
   void setNick(const std::string &newNick)
   {
     _nick = newNick;
