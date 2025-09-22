@@ -1,5 +1,17 @@
 #include "commands.hpp"
 
+bool isIgnoredFlag(const std::string &arg)
+{
+	for (char c : arg)
+	{
+		if (c == '+')
+			continue;
+		if (c == 'b' || c == 'e')
+			return true;
+	}
+	return false;
+}
+
 std::string handleMode(Server *server, const std::vector<std::string> &args,
 					   std::shared_ptr<Client> client)
 {
@@ -33,6 +45,10 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 		return "324 " + nickname + " " + channelName + " " + modes + "\r\n";
 	}
 
+	std::string modeStr = args.at(2);
+	if (isIgnoredFlag(modeStr))
+		return "";
+
 	// Require operator
 	if (!channel->isOperator(client))
 	{
@@ -40,7 +56,7 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 	}
 
 	// MODE changes
-	std::string modeStr = args.at(2);
+
 	bool adding = true;
 	size_t argIndex = 3; // arguments after mode string
 

@@ -110,6 +110,8 @@ void handleInput(std::string input, Server *server, Logger *logger, int clientFd
 		default:
 			break;
 		}
+		if (result.empty())
+			return;
 		client->enqueueMessage(result);
 		server->enableWrite(clientFd);
 	}
