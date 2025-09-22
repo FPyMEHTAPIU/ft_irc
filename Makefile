@@ -36,7 +36,8 @@ COMMANDS_FILES = \
 	ping.cpp \
 	privmsg.cpp \
 	topic.cpp \
-	user.cpp
+	user.cpp \
+	who.cpp
 
 PARSER_FILES = \
 	parser.cpp

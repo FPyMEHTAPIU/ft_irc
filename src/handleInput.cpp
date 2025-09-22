@@ -103,6 +103,10 @@ void handleInput(std::string input, Server *server, Logger *logger, int clientFd
 		case hash("mode"):
 			result = handleMode(server, args, client);
 			break;
+
+		case hash("who"):
+			result = handleWho(server, args, client);
+			break;
 		default:
 			break;
 		}

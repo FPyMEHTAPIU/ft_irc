@@ -59,7 +59,7 @@ std::shared_ptr<Client> Server::getClientByNick(const std::string &nick, const s
             return client.second;
         }
     }
-    throw std::invalid_argument(":ircserv 401 " + senderNick + " " + nick + " :No such nick/channel\r\n");
+    throw std::invalid_argument(":ircserv 401 " + senderNick + " " + nick + " :No such nick\r\n");
 }
 
 std::shared_ptr<Channel> Server::getChannelByName(const std::string &channelName)
@@ -69,7 +69,7 @@ std::shared_ptr<Channel> Server::getChannelByName(const std::string &channelName
     {
         return channel->second;
     }
-    throw std::invalid_argument(":ircserv 401 " + channelName + " :No such nick/channel\r\n");
+    throw std::invalid_argument(":ircserv 403 " + channelName + " :No such channel\r\n");
 }
 
 void Server::addChannel(const std::string &channelName, std::shared_ptr<Channel> channel)
