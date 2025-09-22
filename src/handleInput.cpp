@@ -29,7 +29,7 @@ std::vector<std::string> trimSplitInput(std::string &input, std::string &msg)
 	return args;
 }
 
-void handleInput(std::string input, Server *server, Logger *logger, int clientFd)
+void handleInput(std::string input, Server *server, int clientFd)
 {
 	std::string result = "";
 	try
@@ -80,14 +80,14 @@ void handleInput(std::string input, Server *server, Logger *logger, int clientFd
 			{
 				try
 				{
-					logger->debug(AUTH, "Validating password...");
+					server->logger->debug(AUTH, "Validating password...");
 					validateClientPassword(args[1], storedPassword);
 					result = "Password accepted\r\n";
-					logger->info(AUTH, "Authenticated " + client->getNick() + "!");
+					server->logger->info(AUTH, "Authenticated " + client->getNick() + "!");
 				}
 				catch (const std::exception &e)
 				{
-					logger->error(AUTH, "Password validation failed");
+					server->logger->error(AUTH, "Password validation failed");
 					result = std::string("464 PASS :") + e.what() + "\r\n";
 				}
 			}

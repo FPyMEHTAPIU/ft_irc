@@ -2,23 +2,22 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>
-#include <csignal>
 
 #include "Server.hpp"
 #include "irc.hpp"
 
 int main(int argc, char *argv[])
 {
-    std::signal(SIGINT, SIG_DFL);
-    std::signal(SIGQUIT, SIG_DFL);
     try
     {
         int port = validateArgs(argc, argv);
 
         std::string password = argv[2];
         validatePassword(password);
-        Logger logger;
-        Server server(port, password, &logger);
+
+        auto logger = std::make_shared<Logger>();
+
+        Server server(port, password, logger);
         server.start();
         server.run();
     }
