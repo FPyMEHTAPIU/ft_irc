@@ -28,7 +28,6 @@ private:
   static volatile bool _terminate;
 
   int _serverSocket;
-  Logger *_logger;
 
   std::map<std::string, std::shared_ptr<Channel>> _channels;
   std::map<int, std::shared_ptr<Client>> _clients;
@@ -41,9 +40,11 @@ private:
   void listenSocket();
 
 public:
+  std::shared_ptr<Logger> logger;
+
   Server() = delete;
   Server &operator=(Server const &server) = delete;
-  Server(int port, std::string password, Logger *logger);
+  Server(int port, std::string password, std::shared_ptr<Logger> logger);
   ~Server();
 
   void setupSignals(bool serverStart) noexcept;

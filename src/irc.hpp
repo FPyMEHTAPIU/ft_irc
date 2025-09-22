@@ -11,6 +11,11 @@
 #include "Logger.hpp"
 
 #define ANSI_RED "\033[0;91m"
+#define ANSI_ORANGE "\e[0m\e[38;5;202m"
+#define ANSI_YELLOW "\033[0;93m"
+#define ANSI_GREEN "\033[0;92m"
+#define ANSI_BLUE "\e[0m\e[38;5;39m"
+#define ANSI_PURPLE "\e[0m\e[38;5;171m"
 #define ANSI_RESET "\033[0;39m"
 
 #define PASSWORD_MIN_LENGTH 5
@@ -48,7 +53,7 @@ void validateCommand(const std::string &command);
 // utils.cpp
 std::vector<std::string> split(const std::string &sentence, char sep);
 std::string strToLowercase(const std::string &str);
-void handleInput(std::string input, Server *server, Logger *logger, int clientFd);
+void handleInput(std::string input, Server *server, int clientFd);
 
 // These `hash` fucntions are for using `std::string` in `switch`
 constexpr uint32_t hash(const char *data, size_t size) noexcept
