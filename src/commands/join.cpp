@@ -22,8 +22,7 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, std
 		std::shared_ptr<Channel> channel = server->getChannelByName(channelName);
 		channel->addUser(client);
 
-		std::string prefix = ":" + nickname + "!" + client->getUsername() +
-							 "@localhost";
+		std::string prefix = generatePrefix(client);
 		std::string msg = prefix + " JOIN " + channelName + "\r\n";
 		channel->broadcast(server, msg, -1);
 
@@ -40,7 +39,8 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, std
 	{
 		std::shared_ptr<Channel> newChannel = std::make_shared<Channel>(channelName, client);
 		server->addChannel(channelName, newChannel);
-		std::string msg = ":" + nickname + " JOIN " + channelName + "\r\n";
+		std::string prefix = generatePrefix(client);
+		std::string msg = prefix + " JOIN " + channelName + "\r\n";
 		msg += newChannel->getNamesReply(nickname);
 		return msg;
 	}

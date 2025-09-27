@@ -367,7 +367,7 @@ void Server::removeClient(int clientFd)
 
 void Server::removeChannel(std::string channelName)
 {
-    _logger->info(CLIENT, "Removing channel " + channelName);
+    logger->info(CLIENT, "Removing channel " + channelName);
     _channels.erase(channelName);
 }
 

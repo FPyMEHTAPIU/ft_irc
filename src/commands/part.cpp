@@ -26,7 +26,7 @@ std::string handlePart(Server *server, const std::vector<std::string> &args,
     if (!channel->hasUser(client))
         return "442 " + nickname + " " + channelName + " :You're not on that channel\r\n";
 
-    std::string prefix = ":" + nickname + "!" + client->getUsername() + "@localhost";
+    std::string prefix = generatePrefix(client);
     std::string msg = prefix + " PART " + channelName;
     if (!reason.empty())
         msg += " :" + reason;

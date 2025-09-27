@@ -45,6 +45,7 @@ PARSER_FILES = \
 	parser.cpp
 
 UTILS_FILES = \
+	responsePrefix.cpp \
 	utils.cpp \
 	validateChannelName.cpp \
 	validateClientName.cpp

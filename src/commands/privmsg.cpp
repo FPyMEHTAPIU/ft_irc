@@ -9,7 +9,8 @@ static void handleChannelMessage(Server *server, messageInfo msgInfo)
 		throw std::invalid_argument(":ircserv 404 " + msgInfo.senderNick + " " + msgInfo.target + " :Cannot send to channel\r\n");
 	}
 
-	std::string msg = ":" + msgInfo.senderNick + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
+	std::string prefix = generatePrefix(msgInfo.sender);
+	std::string msg = prefix + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
 	channel->broadcast(server, msg, msgInfo.senderFd);
 	return;
 }
@@ -18,7 +19,8 @@ static void handleDirectMessage(Server *server, messageInfo msgInfo)
 {
 	std::shared_ptr<Client> receiver = server->getClientByNick(msgInfo.target, msgInfo.senderNick);
 
-	std::string out = ":" + msgInfo.senderNick + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
+	std::string prefix = generatePrefix(msgInfo.sender);
+	std::string out = prefix + " PRIVMSG " + msgInfo.target + " :" + msgInfo.message + "\r\n";
 	receiver->enqueueMessage(out);
 	server->enableWrite(receiver->getFd());
 }

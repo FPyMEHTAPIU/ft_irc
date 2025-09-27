@@ -45,7 +45,8 @@ std::string handleKick(Server *server, const std::vector<std::string> &args,
     if (!channel->hasUser(target))
         return "441 " + nickname + " " + targetNick + " " + channelName + " :They aren't on that channel\r\n";
 
-    std::string msg = ":" + nickname + " KICK " + channelName + " " + targetNick + " :" + reason + "\r\n";
+    std::string prefix = generatePrefix(client);
+    std::string msg = prefix + " KICK " + channelName + " " + targetNick + " :" + reason + "\r\n";
 
     channel->broadcast(server, msg, -1);
     channel->removeUser(target);

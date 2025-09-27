@@ -135,7 +135,8 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 		}
 	}
 
-	std::string msg = ":" + nickname + " MODE " + channelName + " " + modeStr;
+	std::string prefix = generatePrefix(client);
+	std::string msg = prefix + " MODE " + channelName + " " + modeStr;
 	for (size_t i = 3; i < args.size(); i++)
 		msg += " " + args.at(i);
 	msg += "\r\n";
