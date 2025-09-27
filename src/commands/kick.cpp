@@ -50,5 +50,8 @@ std::string handleKick(Server *server, const std::vector<std::string> &args,
     channel->broadcast(server, msg, -1);
     channel->removeUser(target);
 
+    if (channel->isEmpty())
+        server->removeChannel(channelName);
+
     return "";
 }
