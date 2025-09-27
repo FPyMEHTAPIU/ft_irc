@@ -50,6 +50,43 @@ void handleInput(std::string input, Server *server, int clientFd)
 
 		switch (hash(cmdLowercase.c_str(), cmdLowercase.size()))
 		{
+		// case hash("cap"):
+		// 	if (args.size() < 2)
+		// 	{
+		// 		result = "461 CAP :Not enough parameters\r\n";
+		// 	}
+		// 	else
+		// 	{
+		// 		std::string subcmd = strToLowercase(args[1]);
+
+		// 		if (subcmd == "ls")
+		// 		{
+		// 			if (!client->isAuthenticated()) // You need this helper in Client
+		// 			{
+		// 				result = "464 CAP :Password required\r\n";
+		// 				// Optionally disconnect client
+		// 				logger->warning(AUTH, "Client FD " + std::to_string(clientFd) +
+		// 										  " attempted CAP LS before PASS. Disconnecting.");
+		// 				client->enqueueMessage("464 :Password required\r\n");
+		// 				server->enableWrite(clientFd);
+		// 				server->removeClient(clientFd);
+		// 				server->getClients().erase(clientFd);
+		// 				return;
+		// 			}
+		// 			else
+		// 			{
+		// 				// Send available capabilities
+		// 				result = ":ircserv CAP * LS :multi-prefix sasl\r\n";
+		// 				break;
+		// 			}
+		// 		}
+		// 		else
+		// 		{
+		// 			result = "410 CAP :Invalid CAP subcommand\r\n";
+		// 			break;
+		// 		}
+		// 	}
+		// 	break;
 		case hash("nick"):
 			if (args.size() < 2)
 				result = "431 :No nickname given\r\n";
@@ -92,6 +129,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 				{
 					server->logger->debug(AUTH, "Validating password...");
 					validateClientPassword(args.at(1), storedPassword);
+					client->authenticate();
 					result = "Password accepted\r\n";
 					server->logger->info(AUTH, "Authenticated " + client->getNick() + "!");
 				}

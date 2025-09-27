@@ -11,26 +11,27 @@ private:
   std::string _username;
   std::string _realname;
   std::deque<std::string> _writeQueue;
-  bool registered;
+  bool _registered;
   std::string _buffer;
+  bool _authenticated;
 
   void checkRegistration()
   {
-    registered = (!_nick.empty() && !_username.empty());
+    _registered = (!_nick.empty() && !_username.empty());
   }
 
 public:
   Client(int fd)
-      : _fd(fd), _nick(""), _username(""), _realname(""), registered(false) {}
+      : _fd(fd), _nick(""), _username(""), _realname(""), _registered(false), _authenticated(false) {}
 
   Client(int fd, const std::string &nick)
-      : _fd(fd), _nick(nick), _username(""), _realname(""), registered(false)
+      : _fd(fd), _nick(nick), _username(""), _realname(""), _registered(false)
   {
     checkRegistration();
   }
 
   Client(int fd, const std::string &nick, const std::string &user, const std::string &real)
-      : _fd(fd), _nick(nick), _username(user), _realname(real), registered(false)
+      : _fd(fd), _nick(nick), _username(user), _realname(real), _registered(false)
   {
     checkRegistration();
   }
@@ -62,12 +63,17 @@ public:
 
   int getFd() const { return _fd; }
 
+  // Message queue helpers
   void enqueueMessage(const std::string &msg) { _writeQueue.push_back(msg); }
   bool hasPendingMessages() const { return !_writeQueue.empty(); }
   std::string &frontMessage() { return _writeQueue.front(); }
   void popMessage() { _writeQueue.pop_front(); }
 
-  bool isRegistered() const { return registered; }
+  bool isRegistered() const { return _registered; };
+
+  // Authentication helpers
+  void authenticate() { _authenticated = true; };
+  bool isAuthenticated() const { return _authenticated; };
 
   std::string &getBuffer() { return _buffer; }
   void clearBuffer() { _buffer.clear(); }
