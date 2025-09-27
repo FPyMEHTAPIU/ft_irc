@@ -31,6 +31,7 @@ CLIENT_FILES = \
 
 COMMANDS_FILES = \
 	join.cpp \
+	kick.cpp \
 	mode.cpp \
 	nick.cpp \
 	ping.cpp \

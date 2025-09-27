@@ -4,7 +4,7 @@ static void handleChannelMessage(Server *server, messageInfo msgInfo)
 {
 	std::shared_ptr<Channel> channel = server->getChannelByName(msgInfo.target);
 
-	if (!channel->isMember(msgInfo.sender))
+	if (!channel->hasUser(msgInfo.sender))
 	{
 		throw std::invalid_argument(":ircserv 404 " + msgInfo.senderNick + " " + msgInfo.target + " :Cannot send to channel\r\n");
 	}

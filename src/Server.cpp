@@ -214,7 +214,7 @@ void Server::run()
                                      [&](const pollfd &pf)
                                      { return pf.fd == pfd.fd; }) == _pollFds.end())
                     {
-                        continue; // client removed, skip increment
+                        continue;
                     }
                 }
             }
@@ -232,7 +232,7 @@ void Server::run()
                 {
                     removeClient(pfd.fd);
                     _clients.erase(pfd.fd);
-                    continue; // client removed, skip increment
+                    continue;
                 }
             }
         }

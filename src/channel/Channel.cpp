@@ -22,7 +22,7 @@ Channel::Channel(std::string name, std::shared_ptr<Client> creator)
   _users.push_back(creator);
   _topic = "";
   _isInviteOnly = false;
-  _isTopicRestricted = false;
+  _isTopicRestricted = true;
   _userLimit = 0;
 }
 
@@ -68,7 +68,7 @@ size_t Channel::getUserLimit() const
   return _userLimit;
 }
 
-bool Channel::isMember(std::shared_ptr<Client> client) const
+bool Channel::hasUser(std::shared_ptr<Client> client) const
 {
   for (auto &user : _users)
   {
@@ -157,6 +157,20 @@ void Channel::addUser(std::shared_ptr<Client> newUser)
 void Channel::addOperator(std::shared_ptr<Client> newOperator)
 {
   _operators.push_back(newOperator);
+}
+
+void Channel::removeUser(std::shared_ptr<Client> oldUser)
+{
+  auto it = std::find_if(
+      _users.begin(),
+      _users.end(),
+      [&](const std::shared_ptr<Client> &user)
+      {
+        return user->getFd() == oldUser->getFd();
+      });
+
+  if (it != _users.end())
+    _users.erase(it);
 }
 
 void Channel::removeOperator(std::shared_ptr<Client> oldOperator)

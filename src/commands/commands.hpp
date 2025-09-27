@@ -12,3 +12,5 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
                        std::shared_ptr<Client> client);
 std::string handleWho(Server *server, const std::vector<std::string> &args,
                       std::shared_ptr<Client> client);
+std::string handleKick(Server *server, const std::vector<std::string> &args,
+                       std::shared_ptr<Client> client, std::string reason);

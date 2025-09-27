@@ -39,7 +39,7 @@ public:
   bool getIsInviteOnly() const;
   bool isTopicRestricted() const;
   size_t getUserLimit() const;
-  bool isMember(std::shared_ptr<Client> client) const;
+  bool hasUser(std::shared_ptr<Client> client) const;
   bool isOperator(std::shared_ptr<Client> client) const;
   void broadcast(Server *server, const std::string &rawMessage, int excludeFd);
   std::string getNamesReply(const std::string &requesterNick) const;
@@ -51,6 +51,7 @@ public:
   void setTopic(std::string newName);
   void addUser(std::shared_ptr<Client> newUser);
   void addOperator(std::shared_ptr<Client> newOperator);
+  void removeUser(std::shared_ptr<Client> oldUser);
   void removeOperator(std::shared_ptr<Client> oldOperator);
   void setIsInviteOnly(bool newMode);
   void setIsTopicRestricted(bool newMode);
