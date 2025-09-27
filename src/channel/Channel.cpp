@@ -33,12 +33,12 @@ bool Channel::operator<(std::shared_ptr<Channel> channel) const
   return _name < channel->_name;
 }
 
-std::vector<std::shared_ptr<Client>> Channel::getUsers()
+const std::vector<std::shared_ptr<Client>> &Channel::getUsers() const
 {
   return _users;
 }
 
-std::vector<std::shared_ptr<Client>> Channel::getOperators() const
+const std::vector<std::shared_ptr<Client>> &Channel::getOperators() const
 {
   return _operators;
 }
@@ -144,14 +144,7 @@ void Channel::setName(std::string newName)
 
 void Channel::setTopic(std::string newTopic)
 {
-  if (!_isTopicRestricted)
-  {
-    _topic = newTopic;
-  }
-  else
-  {
-    std::cout << "Topic is in readonly mode!" << std::endl;
-  }
+  _topic = newTopic;
 }
 
 void Channel::addUser(std::shared_ptr<Client> newUser)
