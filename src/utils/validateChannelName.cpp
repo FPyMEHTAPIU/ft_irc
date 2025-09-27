@@ -29,8 +29,5 @@ bool isValidChannelName(const std::string &name)
 
     std::string lowerName = toLower(name);
 
-    // TODO: Check for existing channels
-    // TODO: if there are no users in a channel, delete the channel and free the name
-
     return true;
 }

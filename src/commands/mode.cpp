@@ -22,6 +22,9 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 	std::shared_ptr<Channel> channel;
 	std::string nickname = client->getNick();
 
+	if (channelName.find_first_of("#!&+", 0, 1) == std::string::npos)
+		return "";
+
 	try
 	{
 		channel = server->getChannelByName(channelName);
@@ -128,13 +131,13 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			break;
 
 		default:
-			return "472 " + nickname + " " + std::string(1, c) + " :is unknown mode char\r\n";
+			return "472 " + nickname + " " + c + " :is unknown mode char\r\n";
 		}
 	}
 
 	std::string msg = ":" + nickname + " MODE " + channelName + " " + modeStr;
 	for (size_t i = 3; i < args.size(); i++)
-		msg += " " + args[i];
+		msg += " " + args.at(i);
 	msg += "\r\n";
 
 	channel->broadcast(server, msg, -1);
