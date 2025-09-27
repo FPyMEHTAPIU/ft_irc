@@ -58,6 +58,7 @@ public:
   void handleClientData(int clientFd);
   void handleClientWrite(int fd);
   void removeClient(int clientFd);
+  void removeChannel(std::string channelName);
 
   // Server getters
   std::map<std::string, std::shared_ptr<Channel>> getChannels();

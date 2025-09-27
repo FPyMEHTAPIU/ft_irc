@@ -122,6 +122,11 @@ std::string Channel::getNamesReply(const std::string &requesterNick) const
          ":ircserv 366 " + requesterNick + " " + _name + " :End of /NAMES list\r\n";
 }
 
+bool Channel::isEmpty() const
+{
+  return _users.size() == 0;
+}
+
 std::string Channel::getKey() const
 {
   return _key;

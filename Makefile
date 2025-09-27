@@ -34,6 +34,7 @@ COMMANDS_FILES = \
 	kick.cpp \
 	mode.cpp \
 	nick.cpp \
+	part.cpp \
 	ping.cpp \
 	privmsg.cpp \
 	topic.cpp \

@@ -43,6 +43,7 @@ public:
   bool isOperator(std::shared_ptr<Client> client) const;
   void broadcast(Server *server, const std::string &rawMessage, int excludeFd);
   std::string getNamesReply(const std::string &requesterNick) const;
+  bool isEmpty() const;
 
   // Only for operators
   std::string getKey() const;
