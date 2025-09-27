@@ -74,7 +74,7 @@ TEST_F(LoggerTest, DebugLevel)
     logger.debug(SERVER, "Debug message");
 
     std::string content = readFileContents(testLogFile);
-    EXPECT_TRUE(content.find("[DEBUG]") != std::string::npos);
+    EXPECT_TRUE(content.find("[" ANSI_PURPLE "DEBUG" ANSI_RESET "]") != std::string::npos);
     EXPECT_TRUE(content.find("Debug message") != std::string::npos);
 }
 
@@ -84,7 +84,7 @@ TEST_F(LoggerTest, InfoLevel)
     logger.info(CLIENT, "Info message");
 
     std::string content = readFileContents(testLogFile);
-    EXPECT_TRUE(content.find("[INFO]") != std::string::npos);
+    EXPECT_TRUE(content.find("[" ANSI_BLUE "INFO" ANSI_RESET "]") != std::string::npos);
     EXPECT_TRUE(content.find("Info message") != std::string::npos);
 }
 
@@ -94,7 +94,7 @@ TEST_F(LoggerTest, WarningLevel)
     logger.warning(AUTH, "Warning message");
 
     std::string content = readFileContents(testLogFile);
-    EXPECT_TRUE(content.find("[WARNING]") != std::string::npos);
+    EXPECT_TRUE(content.find("[" ANSI_YELLOW "WARNING" ANSI_RESET "]") != std::string::npos);
     EXPECT_TRUE(content.find("Warning message") != std::string::npos);
 }
 
@@ -104,7 +104,7 @@ TEST_F(LoggerTest, ErrorLevel)
     logger.error(NETWORK, "Error message");
 
     std::string content = readFileContents(testLogFile);
-    EXPECT_TRUE(content.find("[ERROR]") != std::string::npos);
+    EXPECT_TRUE(content.find("[" ANSI_ORANGE "ERROR" ANSI_RESET "]") != std::string::npos);
     EXPECT_TRUE(content.find("Error message") != std::string::npos);
 }
 
@@ -114,8 +114,18 @@ TEST_F(LoggerTest, FatalLevel)
     logger.fatal(COMMAND, "Fatal message");
 
     std::string content = readFileContents(testLogFile);
-    EXPECT_TRUE(content.find("[FATAL]") != std::string::npos);
+    EXPECT_TRUE(content.find("[" ANSI_RED "FATAL" ANSI_RESET "]") != std::string::npos);
     EXPECT_TRUE(content.find("Fatal message") != std::string::npos);
+}
+
+TEST_F(LoggerTest, SuccessLevel)
+{
+    Logger logger(testLogFile);
+    logger.success(COMMAND, "Success message");
+
+    std::string content = readFileContents(testLogFile);
+    EXPECT_TRUE(content.find("[" ANSI_GREEN "SUCCESS" ANSI_RESET "]") != std::string::npos);
+    EXPECT_TRUE(content.find("Success message") != std::string::npos);
 }
 
 // ---------- Component Tests ----------
@@ -195,7 +205,7 @@ TEST_F(LoggerTest, LogFormatting)
 
     // Check that log contains all expected parts
     EXPECT_TRUE(content.find("[") != std::string::npos); // Timestamp brackets
-    EXPECT_TRUE(content.find("[INFO]") != std::string::npos);
+    EXPECT_TRUE(content.find("[" ANSI_BLUE "INFO" ANSI_RESET "]") != std::string::npos);
     EXPECT_TRUE(content.find("[SERVER]") != std::string::npos);
     EXPECT_TRUE(content.find("Format test") != std::string::npos);
 }
