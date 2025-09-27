@@ -219,7 +219,7 @@ void Server::run()
             }
 
             // Check for hangups or errors
-            if (pfd.revents & (POLLHUP | POLLERR))
+            if (pfd.revents & (POLLHUP | POLLERR | POLLNVAL))
             {
                 if (pfd.fd != _serverSocket)
                 {
