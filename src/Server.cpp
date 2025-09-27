@@ -37,17 +37,17 @@ Server::~Server()
     stop();
 }
 
-std::map<std::string, std::shared_ptr<Channel>> Server::getChannels()
+const std::map<std::string, std::shared_ptr<Channel>> &Server::getChannels() const
 {
     return _channels;
 }
 
-std::map<int, std::shared_ptr<Client>> Server::getClients()
+const std::map<int, std::shared_ptr<Client>> &Server::getClients() const
 {
     return _clients;
 }
 
-std::vector<struct pollfd> Server::getPollFds() const
+const std::vector<struct pollfd> &Server::getPollFds() const
 {
     return _pollFds;
 }

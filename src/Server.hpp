@@ -61,9 +61,9 @@ public:
   void removeChannel(std::string channelName);
 
   // Server getters
-  std::map<std::string, std::shared_ptr<Channel>> getChannels();
-  std::map<int, std::shared_ptr<Client>> getClients();
-  std::vector<struct pollfd> getPollFds() const;
+  const std::map<std::string, std::shared_ptr<Channel>> &getChannels() const;
+  const std::map<int, std::shared_ptr<Client>> &getClients() const;
+  const std::vector<struct pollfd> &getPollFds() const;
   const std::string &getPassword() const;
   std::shared_ptr<Client> getClientByNick(const std::string &nick, const std::string &senderNick);
   std::shared_ptr<Channel> getChannelByName(const std::string &channelName);

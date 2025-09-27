@@ -32,8 +32,8 @@ public:
   ~Channel();
   bool operator<(std::shared_ptr<Channel> channel) const;
 
-  std::vector<std::shared_ptr<Client>> getUsers();
-  std::vector<std::shared_ptr<Client>> getOperators() const;
+  const std::vector<std::shared_ptr<Client>> &getUsers() const;
+  const std::vector<std::shared_ptr<Client>> &getOperators() const;
   std::string getName() const;
   std::string getTopic() const;
   bool getIsInviteOnly() const;
