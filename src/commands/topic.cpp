@@ -3,7 +3,7 @@
 std::string handleTopic(Server *server, const std::vector<std::string> &args,
                         std::string newTopic, std::shared_ptr<Client> client)
 {
-    if (args.size() < 2)
+    if (args.size() < 1)
         return "461 TOPIC :Not enough parameters\r\n";
 
     std::string channelName = args.at(1);
@@ -19,7 +19,7 @@ std::string handleTopic(Server *server, const std::vector<std::string> &args,
         return "403 " + nickname + " " + channelName + " :No such channel\r\n";
     }
 
-    if (newTopic.empty())
+    if (args.size() == 1)
     {
         if (channel->getTopic().empty())
             return "331 " + nickname + " " + channelName + " :No topic is set\r\n";
@@ -27,7 +27,7 @@ std::string handleTopic(Server *server, const std::vector<std::string> &args,
     }
 
     // Remove leading colon if present
-    if (!newTopic.empty() && newTopic.starts_with(':'))
+    if (!newTopic.empty() && newTopic[0] == ':')
         newTopic = newTopic.substr(1);
 
     if (channel->isTopicRestricted() && !channel->isOperator(client))

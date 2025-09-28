@@ -180,10 +180,7 @@ void Channel::removeUser(std::shared_ptr<Client> oldUser)
       });
 
   if (it != _users.end())
-  {
     _users.erase(it);
-    removeOperator(oldUser);
-  }
 }
 
 void Channel::removeOperator(std::shared_ptr<Client> oldOperator)
