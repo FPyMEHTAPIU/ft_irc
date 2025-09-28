@@ -173,7 +173,6 @@ void Server::start()
     struct pollfd serverPoll;
     serverPoll.fd = _serverSocket;
     serverPoll.events = POLLIN;
-    serverPoll.revents = 0;
     _pollFds.push_back(serverPoll);
 
     logger->debug(SERVER, "Server socket added to poll monitoring");
@@ -194,45 +193,38 @@ void Server::run()
                 logger->info(SERVER, "Received shutdown signal");
                 break;
             }
-        }
-        if (pollRes == 0)
+            logger->error(SERVER, "Poll error: " + std::string(strerror(errno)));
             continue;
+        }
 
-        for (auto &pfd : _pollFds)
+        if (pollRes == 0)
+            continue; // No events occurred
+
+        std::vector<struct pollfd> _pollFdsCopy = _pollFds; // Copy to avoid issues during iteration
+        for (const auto &pfd : _pollFdsCopy)
         {
-            // Handle incoming data
+            // Check for incoming data
             if (pfd.revents & POLLIN)
             {
                 if (pfd.fd == _serverSocket)
                     acceptNewClient();
                 else
-                {
                     handleClientData(pfd.fd);
-
-                    // After handleClientData(), check if client was removed
-                    if (std::find_if(_pollFds.begin(), _pollFds.end(),
-                                     [&](const pollfd &pf)
-                                     { return pf.fd == pfd.fd; }) == _pollFds.end())
-                    {
-                        continue;
-                    }
-                }
             }
 
-            // Handle outgoing messages
+            // Check for outgoing data
             if (pfd.revents & POLLOUT)
             {
                 handleClientWrite(pfd.fd);
             }
 
-            // Handle hangups/errors
+            // Check for hangups or errors
             if (pfd.revents & (POLLHUP | POLLERR))
             {
                 if (pfd.fd != _serverSocket)
                 {
                     removeClient(pfd.fd);
                     _clients.erase(pfd.fd);
-                    continue;
                 }
             }
         }
@@ -262,7 +254,6 @@ void Server::acceptNewClient()
     struct pollfd clientPoll;
     clientPoll.fd = clientSocket;
     clientPoll.events = POLLIN;
-    clientPoll.revents = 0;
     _pollFds.push_back(clientPoll);
 
     Client newClient(clientSocket);
