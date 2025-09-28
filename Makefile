@@ -67,9 +67,12 @@ SRC = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 # Object files
 OBJ = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
 
+# Toolchain
 CXX = c++
+
+# Flags: use -MMD -MP to generate .d dependency files automatically
 CPPFLAGS += -I$(INCLUDE_DIR)
-CXXFLAGS += -std=c++20 -Wall -Werror -Wextra -g
+CXXFLAGS += -std=c++20 -Wall -Werror -Wextra -g -MMD -MP
 
 RM = rm -rf
 
@@ -86,6 +89,9 @@ $(NAME): $(OBJ)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
 	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+# include dependency files (auto-generated .d). Use '-' so make won't stop if some .d missing
+-include $(OBJ:.o=.d)
 
 clean:
 	@echo "$(YELLOW)🚽 Deleting object files...$(DEF_COLOR)"
