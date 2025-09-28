@@ -1,10 +1,14 @@
 #pragma once
 #include "../irc.hpp"
 
-std::string handleNick(std::shared_ptr<Client> client, const std::string &nick);
-std::string handleUser(std::shared_ptr<Client> client, const std::vector<std::string> &args, std::string msg);
-std::string handleJoin(Server *server, const std::vector<std::string> &args, std::shared_ptr<Client> client);
-void handlePrivmsg(Server *server, std::vector<std::string> args, int senderFd, const std::string &message);
+std::string handleNick(Server *server, std::shared_ptr<Client> client,
+                       const std::string &newNick);
+std::string handleUser(std::shared_ptr<Client> client, const std::vector<std::string> &args,
+                       std::string msg);
+std::string handleJoin(Server *server, const std::vector<std::string> &args,
+                       std::shared_ptr<Client> client);
+void handlePrivmsg(Server *server, std::vector<std::string> args,
+                   int senderFd, const std::string &message);
 std::string handlePing(const std::vector<std::string> &args);
 std::string handleTopic(Server *server, const std::vector<std::string> &args,
                         std::string newTopic, std::shared_ptr<Client> client);
@@ -18,4 +22,5 @@ std::string handlePart(Server *server, const std::vector<std::string> &args,
                        std::shared_ptr<Client> client, std::string reason);
 std::string handleInvite(Server *server, const std::vector<std::string> &args,
                          std::shared_ptr<Client> client);
-std::string handlePart(Server *server, const std::vector<std::string> &args, std::shared_ptr<Client> client, std::string reason);
+std::string handlePart(Server *server, const std::vector<std::string> &args,
+                       std::shared_ptr<Client> client, std::string reason);

@@ -53,7 +53,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 			if (args.size() < 2)
 				result = "431 :No nickname given\r\n";
 			else
-				result = handleNick(client, args.at(1));
+				result = handleNick(server, client, args.at(1));
 			break;
 
 		case hash("user"):
