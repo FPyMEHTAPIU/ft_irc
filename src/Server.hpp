@@ -87,9 +87,9 @@ public:
   {
     for (size_t i = 0; i < _pollFds.size(); ++i)
     {
-      if (_pollFds.at(i).fd == fd)
+      if (_pollFds[i].fd == fd)
       {
-        _pollFds.at(i).events &= ~POLLOUT;
+        _pollFds[i].events &= ~POLLOUT;
         return;
       }
     }

@@ -6,7 +6,7 @@
 
 bool isValidChannelName(const std::string &name)
 {
-    if (name.empty() || name.front() != '#')
+    if (name.empty() || name[0] != '#')
         return false;
 
     std::string channelName = name.substr(1);

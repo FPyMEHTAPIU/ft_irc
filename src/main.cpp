@@ -11,9 +11,11 @@ int main(int argc, char *argv[])
     try
     {
         int port = validateArgs(argc, argv);
-        std::string password = argv[2];
 
-        std::shared_ptr<Logger> logger = std::make_shared<Logger>();
+        std::string password = argv[2];
+        validatePassword(password);
+
+        auto logger = std::make_shared<Logger>();
 
         Server server(port, password, logger);
         server.start();
