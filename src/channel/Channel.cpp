@@ -7,7 +7,7 @@ Channel::Channel(std::string name, std::shared_ptr<Client> creator)
   if (name.empty())
     throw std::invalid_argument("Channel name cannot be empty");
 
-  if (name[0] != '#')
+  if (name.front() != '#')
   {
     name = "#" + name;
   }

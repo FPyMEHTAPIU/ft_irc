@@ -91,7 +91,7 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			{
 				if (argIndex >= args.size())
 					return "461 MODE :Not enough parameters\r\n";
-				channel->setKey(args[argIndex++]);
+				channel->setKey(args.at(argIndex++));
 			}
 			else
 			{
@@ -103,7 +103,7 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			if (argIndex >= args.size())
 				return "461 MODE :Not enough parameters\r\n";
 			{
-				std::string targetNick = args[argIndex++];
+				std::string targetNick = args.at(argIndex++);
 				std::shared_ptr<Client> target = server->getClientByNick(targetNick, nickname);
 				if (!target)
 				{
@@ -121,7 +121,7 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			{
 				if (argIndex >= args.size())
 					return "461 MODE :Not enough parameters\r\n";
-				size_t limit = std::stoul(args[argIndex++]);
+				size_t limit = std::stoul(args.at(argIndex++));
 				channel->setUserLimit(limit);
 			}
 			else

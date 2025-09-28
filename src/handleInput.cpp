@@ -4,8 +4,9 @@
 
 std::vector<std::string> trimSplitInput(std::string &input, std::string &msg)
 {
-	// remove carriage return characters
-	input.pop_back();
+	if (input.back() == '\r')
+		input.pop_back();
+
 	std::vector<std::string> args;
 	std::vector<std::string> splittedMsg = split(input, ':');
 
@@ -90,7 +91,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 				try
 				{
 					server->logger->debug(AUTH, "Validating password...");
-					validateClientPassword(args[1], storedPassword);
+					validateClientPassword(args.at(1), storedPassword);
 					result = "Password accepted\r\n";
 					server->logger->info(AUTH, "Authenticated " + client->getNick() + "!");
 				}
