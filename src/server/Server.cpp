@@ -293,30 +293,46 @@ void Server::handleClientData(int clientFd)
 
     std::vector<std::string> cmds = split(buffer, '\n');
 
-    for (const std::string &cmd : cmds)
+    for (size_t i = 0; i < cmds.size(); ++i)
     {
         std::string msg = "";
-        std::vector<std::string> args = trimSplitInput(const_cast<std::string &>(cmd), msg);
+        std::vector<std::string> args = trimSplitInput(cmds.at(i), msg);
         if (args.empty())
             continue;
 
-        std::string cmdLowercase = strToLowercase(args[0]);
-
-        std::shared_ptr<Client> client = _clients.at(clientFd);
-
-        // 🔑 Intercept PASS before handleInput
-        if (cmdLowercase == "pass")
+        if (args.front() == "cap")
         {
-            std::string result = handlePass(this, client, clientFd, args);
-            if (!result.empty())
+            // handle pass
+            std::shared_ptr<Client> client = _clients.at(clientFd);
+            msg = "";
+            try
             {
-                client->enqueueMessage(result);
-                enableWrite(clientFd);
+                std::string nextCmd = cmds.at(1);
+                std::vector<std::string> nextCmdArgs = trimSplitInput(cmds.at(i + 1), msg);
+                if (args.empty())
+                    continue;
+                std::string cmdLowercase = strToLowercase(nextCmdArgs.front());
+
+                // 🔑 Intercept PASS before handleInput
+                if (cmdLowercase == "pass")
+                {
+                    std::string result = handlePass(this, client, clientFd, nextCmdArgs);
+                    if (!result.empty())
+                    {
+                        client->enqueueMessage(result);
+                        enableWrite(clientFd);
+                    }
+                    continue; // skip normal handleInput
+                }
             }
-            continue; // skip normal handleInput
+            catch (...)
+            {
+                // send password not provided
+                logger->error(CLIENT, "HUI VAM!");
+            }
         }
         // otherwise, forward to main dispatcher
-        handleInput(cmd, this, clientFd);
+        handleInput(cmds.at(i), this, clientFd);
     }
 }
 
