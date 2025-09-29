@@ -1,5 +1,6 @@
 #include "Server.hpp"
-#include "Logger.hpp"
+#include "../logger/Logger.hpp"
+#include "../commands/commands.hpp"
 #include <stdexcept>
 #include <cstring>
 #include <cerrno>
@@ -294,6 +295,27 @@ void Server::handleClientData(int clientFd)
 
     for (const std::string &cmd : cmds)
     {
+        std::string msg = "";
+        std::vector<std::string> args = trimSplitInput(const_cast<std::string &>(cmd), msg);
+        if (args.empty())
+            continue;
+
+        std::string cmdLowercase = strToLowercase(args[0]);
+
+        std::shared_ptr<Client> client = _clients.at(clientFd);
+
+        // 🔑 Intercept PASS before handleInput
+        if (cmdLowercase == "pass")
+        {
+            std::string result = handlePass(this, client, clientFd, args);
+            if (!result.empty())
+            {
+                client->enqueueMessage(result);
+                enableWrite(clientFd);
+            }
+            continue; // skip normal handleInput
+        }
+        // otherwise, forward to main dispatcher
         handleInput(cmd, this, clientFd);
     }
 }
@@ -343,17 +365,26 @@ void Server::removeClient(int clientFd)
 {
     logger->info(CLIENT, "Removing client FD " + std::to_string(clientFd));
 
-    // Find the client socket in the pollfd vector
-    auto it = std::find_if(_pollFds.begin(), _pollFds.end(), [clientFd](const struct pollfd &pfd)
-                           { return pfd.fd == clientFd; });
+    // Close the socket
+    close(clientFd);
 
-    // If found, clean up the client
+    // Remove from pollfd list
+    auto it = std::find_if(_pollFds.begin(), _pollFds.end(),
+                           [clientFd](const struct pollfd &pfd)
+                           { return pfd.fd == clientFd; });
     if (it != _pollFds.end())
     {
-        close(clientFd);
-        _pollFds.erase(it); // remove from the vector
-        std::cout << "Client FD " << clientFd << " removed." << std::endl;
+        _pollFds.erase(it);
     }
+
+    // Remove from clients map
+    auto clientIt = _clients.find(clientFd);
+    if (clientIt != _clients.end())
+    {
+        _clients.erase(clientIt);
+    }
+
+    std::cout << "Client FD " << clientFd << " fully removed." << std::endl;
 }
 
 void Server::removeChannel(std::string channelName)

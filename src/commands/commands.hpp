@@ -24,3 +24,5 @@ std::string handleInvite(Server *server, const std::vector<std::string> &args,
                          std::shared_ptr<Client> client);
 std::string handlePart(Server *server, const std::vector<std::string> &args,
                        std::shared_ptr<Client> client, std::string reason);
+std::string handlePass(Server *server, std::shared_ptr<Client> client, int clientFd,
+                       const std::vector<std::string> &args);

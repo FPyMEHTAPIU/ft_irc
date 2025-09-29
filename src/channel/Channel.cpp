@@ -139,12 +139,24 @@ bool Channel::isEmpty() const
   return _users.size() == 0;
 }
 
-std::string Channel::getKey() const
+bool Channel::isChannelKeyRequired() const
+{
+  return !_key.empty();
+}
+
+bool Channel::validateChannelKey(const std::string &attempt) const
+{
+  if (!isChannelKeyRequired())
+    return true; // no key required
+  return attempt == _key;
+}
+
+std::string Channel::getChannelKey() const
 {
   return _key;
 }
 
-void Channel::setKey(std::string newKey)
+void Channel::setChannelKey(std::string newKey)
 {
   _key = newKey;
 }

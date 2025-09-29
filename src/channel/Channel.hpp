@@ -48,8 +48,10 @@ public:
   bool isEmpty() const;
 
   // Only for operators
-  std::string getKey() const;
-  void setKey(std::string newKey);
+  bool isChannelKeyRequired() const;
+  bool validateChannelKey(const std::string &attempt) const;
+  std::string getChannelKey() const;
+  void setChannelKey(std::string newKey);
   void setName(std::string newName);
   void setTopic(std::string newName);
   void addUser(std::shared_ptr<Client> newUser);

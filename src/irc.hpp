@@ -5,10 +5,10 @@
 #include <memory>
 #include <cstring>
 #include <algorithm>
-#include "Server.hpp"
-#include "client/Client.hpp"
-#include "channel/Channel.hpp"
-#include "Logger.hpp"
+#include "./server/Server.hpp"
+#include "./client/Client.hpp"
+#include "./channel/Channel.hpp"
+#include "./logger/Logger.hpp"
 
 #define ANSI_RED "\033[0;91m"
 #define ANSI_ORANGE "\e[0m\e[38;5;202m"
@@ -54,6 +54,7 @@ void validateCommand(const std::string &command);
 std::vector<std::string> split(const std::string &sentence, char sep);
 std::string strToLowercase(const std::string &str);
 void handleInput(std::string input, Server *server, int clientFd);
+std::vector<std::string> trimSplitInput(std::string &input, std::string &msg);
 std::string generatePrefix(std::shared_ptr<Client> client);
 
 // These `hash` fucntions are for using `std::string` in `switch`

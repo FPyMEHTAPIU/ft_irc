@@ -8,10 +8,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include "channel/Channel.hpp"
-#include "client/Client.hpp"
-#include "irc.hpp"
-#include "Logger.hpp"
+#include "../channel/Channel.hpp"
+#include "../client/Client.hpp"
+#include "../irc.hpp"
+#include "../logger/Logger.hpp"
 
 #define SERVER_BACKLOG 10 // max number of pending connections
 #ifndef SOCK_NONBLOCK

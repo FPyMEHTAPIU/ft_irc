@@ -2,7 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <ctime>
-#include "irc.hpp"
+#include "../irc.hpp"
 
 Logger::Logger() : _consoleOutput(true), _fileOutput(false)
 {

@@ -17,6 +17,8 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, std
 		return "476 " + nickname + " " + channelName + " :Bad Channel Mask\r\n";
 	}
 
+	std::string channelKeyAttempt = (args.size() >= 3 ? args[2] : "");
+
 	try
 	{
 		std::shared_ptr<Channel> channel = server->getChannelByName(channelName);
@@ -37,6 +39,10 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, std
 		if (channel->isInvited(client))
 		{
 			channel->removeInvite(client);
+		}
+		if (channel->isChannelKeyRequired() && !channel->validateChannelKey(channelKeyAttempt))
+		{
+			return "475 " + nickname + " " + channelName + " :Cannot join channel (+k)\r\n";
 		}
 
 		channel->addUser(client);
