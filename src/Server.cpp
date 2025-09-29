@@ -288,13 +288,31 @@ void Server::handleClientData(int clientFd)
     }
 
     buffer[bytesRead] = '\0';
+
+    std::shared_ptr<Client> client = _clients.at(clientFd);
+
     logger->info(CLIENT, "Received from client fd " + std::to_string(clientFd) + ": " + buffer);
 
-    std::vector<std::string> cmds = split(buffer, '\n');
+    // Append the received data to the buffer
+    client->getBuffer().append(buffer);
 
-    for (const std::string &cmd : cmds)
+    std::cout << "BUFFER NOW: [" << client->getBuffer() << "]" << std::endl;
+
+    for (std::string::size_type pos; (pos = client->getBuffer().find("\n")) != std::string::npos;)
     {
-        handleInput(cmd, this, clientFd);
+        std::cout << "FOUND MESSAGE: [" << client->getBuffer() << "]" << std::endl;
+        std::string message = client->getBuffer().substr(0, pos);
+        client->getBuffer().erase(0, pos + 1);
+
+        // Process the complete command
+        std::vector<std::string> cmds = split(message, '\n');
+        for (const std::string &cmd : cmds)
+        {
+            if (!cmd.empty() && cmd.ends_with("\n")) // Skip empty commands
+            {
+                handleInput(cmd, this, clientFd);
+            }
+        }
     }
 }
 

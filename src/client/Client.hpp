@@ -12,6 +12,7 @@ private:
   std::string _realname;
   std::deque<std::string> _writeQueue;
   bool registered;
+  std::string _buffer;
 
   void checkRegistration()
   {
@@ -67,4 +68,7 @@ public:
   void popMessage() { _writeQueue.pop_front(); }
 
   bool isRegistered() const { return registered; }
+
+  std::string &getBuffer() { return _buffer; }
+  void clearBuffer() { _buffer.clear(); }
 };
