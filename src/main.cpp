@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 
-#include "Server.hpp"
+#include "./server/Server.hpp"
 #include "irc.hpp"
 
 int main(int argc, char *argv[])

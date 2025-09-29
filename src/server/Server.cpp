@@ -1,5 +1,6 @@
 #include "Server.hpp"
-#include "Logger.hpp"
+#include "../logger/Logger.hpp"
+#include "../commands/commands.hpp"
 #include <stdexcept>
 #include <cstring>
 #include <cerrno>
@@ -358,17 +359,26 @@ void Server::removeClient(int clientFd)
 {
     logger->info(CLIENT, "Removing client FD " + std::to_string(clientFd));
 
-    // Find the client socket in the pollfd vector
-    auto it = std::find_if(_pollFds.begin(), _pollFds.end(), [clientFd](const struct pollfd &pfd)
-                           { return pfd.fd == clientFd; });
+    // Close the socket
+    close(clientFd);
 
-    // If found, clean up the client
+    // Remove from pollfd list
+    auto it = std::find_if(_pollFds.begin(), _pollFds.end(),
+                           [clientFd](const struct pollfd &pfd)
+                           { return pfd.fd == clientFd; });
     if (it != _pollFds.end())
     {
-        close(clientFd);
-        _pollFds.erase(it); // remove from the vector
-        std::cout << "Client FD " << clientFd << " removed." << std::endl;
+        _pollFds.erase(it);
     }
+
+    // Remove from clients map
+    auto clientIt = _clients.find(clientFd);
+    if (clientIt != _clients.end())
+    {
+        _clients.erase(clientIt);
+    }
+
+    std::cout << "Client FD " << clientFd << " fully removed." << std::endl;
 }
 
 void Server::removeChannel(std::string channelName)

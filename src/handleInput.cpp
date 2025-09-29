@@ -1,6 +1,6 @@
 #include "irc.hpp"
-#include "commands/commands.hpp"
-#include "Server.hpp"
+#include "./commands/commands.hpp"
+#include "./server/Server.hpp"
 
 std::vector<std::string> trimSplitInput(std::string &input, std::string &msg)
 {
@@ -45,6 +45,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 		validateCommand(cmdLowercase);
 
 		std::shared_ptr<Client> client = server->getClients().at(clientFd);
+		server->logger->debug(CLIENT, "client " + client->getNick());
 
 		std::string storedPassword = server->getPassword();
 
@@ -61,24 +62,28 @@ void handleInput(std::string input, Server *server, int clientFd)
 
 		// 		if (subcmd == "ls")
 		// 		{
-		// 			if (!client->isAuthenticated()) // You need this helper in Client
+		// 			if (!client->isAuthenticated())
 		// 			{
 		// 				result = "464 CAP :Password required\r\n";
-		// 				// Optionally disconnect client
-		// 				logger->warning(AUTH, "Client FD " + std::to_string(clientFd) +
-		// 										  " attempted CAP LS before PASS. Disconnecting.");
+		// 				server->logger->warning(AUTH, "Client FD " + std::to_string(clientFd) +
+		// 												  " attempted CAP LS before PASS. Disconnecting.");
 		// 				client->enqueueMessage("464 :Password required\r\n");
 		// 				server->enableWrite(clientFd);
 		// 				server->removeClient(clientFd);
-		// 				server->getClients().erase(clientFd);
 		// 				return;
 		// 			}
 		// 			else
 		// 			{
-		// 				// Send available capabilities
 		// 				result = ":ircserv CAP * LS :multi-prefix sasl\r\n";
 		// 				break;
 		// 			}
+		// 		}
+		// 		else if (subcmd == "end")
+		// 		{
+		// 			// CAP END doesn't require any response per the IRCv3 spec
+		// 			// You might want to log it or update some internal state if needed
+		// 			server->logger->info(AUTH, "Client FD " + std::to_string(clientFd) + " ended CAP negotiation.");
+		// 			break;
 		// 		}
 		// 		else
 		// 		{
@@ -118,28 +123,10 @@ void handleInput(std::string input, Server *server, int clientFd)
 			handlePrivmsg(server, args, clientFd, msg);
 			return;
 
-		case hash("pass"):
-			if (args.size() < 2)
-			{
-				result = "461 PASS :Not enough parameters\r\n";
-			}
-			else
-			{
-				try
-				{
-					server->logger->debug(AUTH, "Validating password...");
-					validateClientPassword(args.at(1), storedPassword);
-					client->authenticate();
-					result = "Password accepted\r\n";
-					server->logger->info(AUTH, "Authenticated " + client->getNick() + "!");
-				}
-				catch (const std::exception &e)
-				{
-					server->logger->error(AUTH, "Password validation failed");
-					result = std::string("464 PASS :") + e.what() + "\r\n";
-				}
-			}
-			break;
+			// case hash("pass"):
+			// 	result = handlePass(server, client, clientFd, args);
+			// 	break;
+
 		case hash("ping"):
 			result = handlePing(args);
 			break;

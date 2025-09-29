@@ -41,7 +41,7 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			modes += "i";
 		if (channel->isTopicRestricted())
 			modes += "t";
-		if (!channel->getKey().empty())
+		if (!channel->getChannelKey().empty())
 			modes += "k";
 		if (channel->getUserLimit() > 0)
 			modes += "l";
@@ -95,7 +95,7 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			}
 			else
 			{
-				channel->setKey("");
+				channel->setChannelKey("");
 			}
 			break;
 
