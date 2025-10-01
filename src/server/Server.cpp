@@ -257,11 +257,6 @@ void Server::acceptNewClient()
         return;
     }
 
-    int flags = fcntl(clientSocket, F_GETFL, 0);
-    if (flags == -1)
-        flags = 0;
-    fcntl(clientSocket, F_SETFL, flags | O_NONBLOCK);
-
     struct pollfd clientPoll;
     clientPoll.fd = clientSocket;
     clientPoll.events = POLLIN;
