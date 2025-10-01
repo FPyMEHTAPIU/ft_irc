@@ -91,7 +91,7 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 			{
 				if (argIndex >= args.size())
 					return "461 MODE :Not enough parameters\r\n";
-				channel->setKey(args.at(argIndex++));
+				channel->setChannelKey(args.at(argIndex++));
 			}
 			else
 			{

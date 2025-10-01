@@ -82,7 +82,7 @@ gtest_discover_tests(command_test)
 add_executable(
   logger_test
   tests/logger_test.cc
-  ../src/Logger.cpp
+  ../src/logger/Logger.cpp
 )
 target_link_libraries(
   logger_test
