@@ -109,6 +109,10 @@ std::string handleMode(Server *server, const std::vector<std::string> &args,
 				{
 					return "401 " + nickname + " " + targetNick + " :No such nick\r\n";
 				}
+				if (!channel->hasUser(target))
+				{
+					return "";
+				}
 				if (adding)
 					channel->addOperator(target);
 				else
