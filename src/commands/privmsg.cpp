@@ -6,7 +6,8 @@ static void handleChannelMessage(Server *server, messageInfo msgInfo)
 
 	if (!channel->hasUser(msgInfo.sender))
 	{
-		throw std::invalid_argument(":ircserv 404 " + msgInfo.senderNick + " " + msgInfo.target + " :Cannot send to channel\r\n");
+		msgInfo.sender->enqueueMessage("Cannot send to channel\r\n");
+		return;
 	}
 
 	std::string prefix = generatePrefix(msgInfo.sender);
