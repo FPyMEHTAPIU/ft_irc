@@ -262,8 +262,6 @@ void Server::acceptNewClient()
 
     std::string clientIP = inet_ntoa(clientAddr.sin_addr);
     logger->info(CLIENT, "New client connected. FD: " + std::to_string(clientSocket) + " IP: " + clientIP);
-
-    send(clientSocket, "Welcome to our IRC server!\n", 29, 0);
 }
 
 void Server::handleClientData(int clientFd)
@@ -306,9 +304,14 @@ void Server::handleClientData(int clientFd)
         std::vector<std::string> cmds = split(message, '\n');
         for (const std::string &cmd : cmds)
         {
-            if (!cmd.empty()) // Skip empty commands
+            try
             {
                 handleInput(cmd, this, clientFd);
+            }
+            catch (std::exception &e)
+            {
+                std::cerr << e.what() << std::endl;
+                break;
             }
         }
     }
@@ -327,8 +330,19 @@ void Server::handleClientWrite(int fd)
         }
 
         std::string &msg = client->frontMessage();
+
+        // delete the line bellow later
         std::cout << "SENDING: " << msg << std::endl;
+
         ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
+
+        bool onRemove = msg.starts_with("464");
+
+        if (onRemove)
+        {
+            removeClient(fd);
+            return;
+        }
 
         if (sent < 0)
         {

@@ -17,19 +17,15 @@ std::string handlePass(Server *server, std::shared_ptr<Client> client, int clien
         validateClientPassword(providedPassword, storedPassword);
         client->authenticate();
         server->logger->info(AUTH, "Authenticated " + client->getNick() + "!");
-        return ""; // success: no explicit reply needed, let normal flow continue
+        return "";
     }
     catch (const std::exception &e)
     {
-        // Build the error message BEFORE removing client
-        std::string err = "464 PASS :Password incorrect\r\n";
-        send(clientFd, err.c_str(), err.size(), 0); // flush error immediately
+        client->enqueueMessage("464 PASS :Password incorrect\r\n");
+        server->enableWrite(clientFd);
 
         server->logger->error(AUTH, "Password validation failed for client FD " + std::to_string(clientFd));
 
-        // Now disconnect the client
-        server->removeClient(clientFd);
-
-        return ""; // no further reply (already sent + closed)
+        return "";
     }
 }
