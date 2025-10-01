@@ -70,6 +70,16 @@ std::shared_ptr<Client> Server::getClientByNick(const std::string &nick, const s
     throw std::invalid_argument(":ircserv 401 " + senderNick + " " + nick + " :No such nick\r\n");
 }
 
+bool Server::hasNick(const std::string &nick) const
+{
+    for (auto &pair : _clients)
+    {
+        if (pair.second->getNick() == nick)
+            return true;
+    }
+    return false;
+}
+
 std::shared_ptr<Channel> Server::getChannelByName(const std::string &channelName)
 {
     auto channel = _channels.find(channelName);

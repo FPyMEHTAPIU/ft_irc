@@ -53,6 +53,7 @@ LOGGER_FILES = Logger.cpp
 SERVER_FILES = Server.cpp
 
 COMMANDS_FILES = \
+	invite.cpp \
 	join.cpp \
 	kick.cpp \
 	mode.cpp \
@@ -64,7 +65,7 @@ COMMANDS_FILES = \
 	topic.cpp \
 	user.cpp \
 	who.cpp \
-	invite.cpp 
+	whois.cpp
 
 PARSER_FILES = \
 	parser.cpp

@@ -2,7 +2,7 @@
 #include "../irc.hpp"
 
 std::string handleNick(Server *server, std::shared_ptr<Client> client,
-                       const std::string &newNick);
+                       std::string &newNick);
 std::string handleUser(std::shared_ptr<Client> client, const std::vector<std::string> &args,
                        std::string msg);
 std::string handleJoin(Server *server, const std::vector<std::string> &args,
@@ -26,3 +26,5 @@ std::string handlePart(Server *server, const std::vector<std::string> &args,
                        std::shared_ptr<Client> client, std::string reason);
 std::string handlePass(Server *server, std::shared_ptr<Client> client, int clientFd,
                        const std::vector<std::string> &args);
+std::string handleWhois(Server *server, const std::vector<std::string> &args,
+                        std::shared_ptr<Client> client);

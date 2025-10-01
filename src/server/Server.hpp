@@ -67,6 +67,7 @@ public:
   const std::string &getPassword() const;
   std::shared_ptr<Client> getClientByNick(const std::string &nick, const std::string &senderNick);
   std::shared_ptr<Channel> getChannelByName(const std::string &channelName);
+  bool hasNick(const std::string &nick) const;
 
   void addChannel(const std::string &channelName, std::shared_ptr<Channel> channel);
   void addClient(int fd, Client client);

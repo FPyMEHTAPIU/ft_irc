@@ -104,6 +104,9 @@ void handleInput(std::string input, Server *server, int clientFd)
 	case hash("who"):
 		result = handleWho(server, args, client);
 		break;
+	case hash("whois"):
+		result = handleWhois(server, args, client);
+		break;
 	case hash("kick"):
 		result = handleKick(server, args, client, msg);
 		break;
