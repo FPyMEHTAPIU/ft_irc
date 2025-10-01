@@ -303,7 +303,14 @@ void Server::handleClientData(int clientFd)
     logger->info(CLIENT, "Received from client fd " + std::to_string(clientFd) + ": " + buffer);
 
     // Append the received data to the buffer
-    client->getBuffer().append(buffer);
+    if (client->getBuffer().length() + bytesRead >= BUFFER_SIZE)
+    {
+        logger->warning(CLIENT, "Client FD " + std::to_string(clientFd) + " buffer overflow. Clearing buffer.");
+        client->clearBuffer();
+        client->enqueueMessage("ERROR :Message too long\r\n");
+    }
+    else
+        client->getBuffer().append(buffer);
 
     for (std::string::size_type pos; (pos = client->getBuffer().find("\n")) != std::string::npos;)
     {
