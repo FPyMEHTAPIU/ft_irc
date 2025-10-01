@@ -80,7 +80,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 		break;
 	case hash("leave"):
 	case hash("part"):
-		std::cout << "leaving channel..." << args.at(1) << std::endl;
+		std::cout << "leaving channel..." << std::endl;
 		result = handlePart(server, args, client, msg);
 		break;
 
