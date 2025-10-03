@@ -297,7 +297,7 @@ void Server::handleClientData(int clientFd)
     logger->info(CLIENT, "Received from client fd " + std::to_string(clientFd) + ": " + buffer);
 
     // Append the received data to the buffer
-    if (client->getBuffer().length() + bytesRead >= BUFFER_SIZE)
+    if (client->getBuffer().length() + bytesRead > BUFFER_SIZE)
     {
         logger->warning(CLIENT, "Client FD " + std::to_string(clientFd) + " buffer overflow. Clearing buffer.");
         client->clearBuffer();

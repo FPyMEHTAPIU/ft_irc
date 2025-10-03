@@ -22,7 +22,7 @@
 #define PASSWORD_MAX_LENGTH 32
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 513
 #endif
 
 class Server;
