@@ -1,6 +1,6 @@
 #include "irc.hpp"
-#include "./commands/commands.hpp"
-#include "./server/Server.hpp"
+#include "commands/commands.hpp"
+#include "server/Server.hpp"
 #include "validation/validation.hpp"
 
 std::vector<std::string> trimSplitInput(std::string &input, std::string &msg)

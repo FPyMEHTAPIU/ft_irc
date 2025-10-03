@@ -21,7 +21,7 @@ include(GoogleTest)
 add_executable(
   username_test
   tests/username_test.cc
-  ../src/utils/validateClientName.cpp
+  ../src/validation/validation.cpp
   ../src/utils/utils.cpp
 )
 target_link_libraries(
@@ -34,7 +34,7 @@ gtest_discover_tests(username_test)
 add_executable(
   channelname_test
   tests/channelname_test.cc
-  ../src/utils/validateChannelName.cpp
+  ../src/validation/validation.cpp
 )
 target_link_libraries(
   channelname_test 
@@ -46,7 +46,7 @@ gtest_discover_tests(channelname_test)
 add_executable(
   password_test
   tests/password_test.cc
-  ../src/parser/parser.cpp
+  ../src/validation/validation.cpp
 )
 target_link_libraries(
   password_test 
@@ -58,7 +58,7 @@ gtest_discover_tests(password_test)
 add_executable(
   port_test
   tests/port_test.cc
-  ../src/parser/parser.cpp
+  ../src/validation/validation.cpp
 )
 target_link_libraries(
   port_test 
@@ -70,7 +70,7 @@ gtest_discover_tests(port_test)
 add_executable(
   command_test
   tests/command_test.cc
-  ../src/parser/parser.cpp
+  ../src/validation/validation.cpp
 )
 target_link_libraries(
   command_test 

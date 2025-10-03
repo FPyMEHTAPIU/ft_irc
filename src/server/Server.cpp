@@ -127,6 +127,16 @@ void Server::addClient(int fd, Client client)
     _clients.insert({fd, std::make_shared<Client>(client)});
 }
 
+void Server::enableWrite(int clientFd)
+{
+    SocketUtils::enableWrite(_pollFds, clientFd);
+}
+
+void Server::disableWrite(int fd)
+{
+    SocketUtils::disableWrite(_pollFds, fd);
+}
+
 // Private socket methods
 void Server::setupSocket()
 {

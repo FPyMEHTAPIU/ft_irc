@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "../irc.hpp"
 #include "../common/socket_utils.hpp"
 
 class Channel;
@@ -61,7 +62,7 @@ public:
   std::shared_ptr<Client> getClientByFd(const int &fd);
   std::shared_ptr<Channel> getChannelByName(const std::string &channelName);
   bool hasNick(const std::string &nick) const;
-  
+
   // Safe client lookup methods
   std::shared_ptr<Client> findClientByNick(const std::string &nick) const;
   std::shared_ptr<Client> findClientByFd(const int &fd) const;
@@ -69,13 +70,6 @@ public:
   void addChannel(const std::string &channelName, std::shared_ptr<Channel> channel);
   void addClient(int fd, Client client);
 
-  void enableWrite(int clientFd)
-  {
-    SocketUtils::enableWrite(_pollFds, clientFd);
-  }
-
-  void disableWrite(int fd)
-  {
-    SocketUtils::disableWrite(_pollFds, fd);
-  }
+  void enableWrite(int clientFd);
+  void disableWrite(int fd);
 };

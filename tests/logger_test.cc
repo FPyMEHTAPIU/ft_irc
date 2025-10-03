@@ -2,6 +2,7 @@
 #include "../src/logger/Logger.hpp"
 #include <fstream>
 #include <sstream>
+#include "../src/common/constants.hpp"
 #include <filesystem>
 
 class LoggerTest : public ::testing::Test
