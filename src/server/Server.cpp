@@ -2,9 +2,13 @@
 #include <cstring>
 #include <cerrno>
 #include <string>
-#include <algorithm> // for std::find_if
+#include <iostream>
 #include <termios.h>
 #include <csignal>
+#include "../client/Client.hpp"
+#include "../logger/Logger.hpp"
+#include "../common/constants.hpp"
+#include "../irc.hpp"
 
 volatile bool Server::_terminate = false;
 
@@ -53,6 +57,26 @@ const std::string &Server::getPassword() const
 
 std::shared_ptr<Client> Server::getClientByNick(const std::string &nick, const std::string &senderNick)
 {
+    auto client = findClientByNick(nick);
+    if (!client)
+    {
+        throw std::invalid_argument(":ircserv 401 " + senderNick + " " + nick + " :No such nick\r\n");
+    }
+    return client;
+}
+
+std::shared_ptr<Client> Server::getClientByFd(const int &fd)
+{
+    auto client = findClientByFd(fd);
+    if (!client)
+    {
+        throw std::runtime_error("Client with fd " + std::to_string(fd) + " not found");
+    }
+    return client;
+}
+
+std::shared_ptr<Client> Server::findClientByNick(const std::string &nick) const
+{
     for (auto &client : _clients)
     {
         if (client.second->getNick() == nick)
@@ -60,13 +84,17 @@ std::shared_ptr<Client> Server::getClientByNick(const std::string &nick, const s
             return client.second;
         }
     }
-    throw std::invalid_argument(":ircserv 401 " + senderNick + " " + nick + " :No such nick\r\n");
+    return nullptr;
 }
 
-std::shared_ptr<Client> Server::getClientByFd(const int &fd)
+std::shared_ptr<Client> Server::findClientByFd(const int &fd) const
 {
     auto clientPair = _clients.find(fd);
-    return clientPair->second;
+    if (clientPair != _clients.end())
+    {
+        return clientPair->second;
+    }
+    return nullptr;
 }
 
 bool Server::hasNick(const std::string &nick) const
@@ -97,6 +125,16 @@ void Server::addChannel(const std::string &channelName, std::shared_ptr<Channel>
 void Server::addClient(int fd, Client client)
 {
     _clients.insert({fd, std::make_shared<Client>(client)});
+}
+
+void Server::enableWrite(int clientFd)
+{
+    SocketUtils::enableWrite(_pollFds, clientFd);
+}
+
+void Server::disableWrite(int fd)
+{
+    SocketUtils::disableWrite(_pollFds, fd);
 }
 
 // Private socket methods
@@ -347,7 +385,7 @@ void Server::handleClientWrite(int fd)
 
         ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
 
-        bool onRemove = msg.starts_with("464");
+        bool onRemove = msg.substr(0, 3) == "464";
 
         if (onRemove)
         {
@@ -388,13 +426,7 @@ void Server::removeClient(int clientFd)
     close(clientFd);
 
     // Remove from pollfd list
-    auto it = std::find_if(_pollFds.begin(), _pollFds.end(),
-                           [clientFd](const struct pollfd &pfd)
-                           { return pfd.fd == clientFd; });
-    if (it != _pollFds.end())
-    {
-        _pollFds.erase(it);
-    }
+    SocketUtils::removeFromPoll(_pollFds, clientFd);
 
     // Remove from clients map
     auto clientIt = _clients.find(clientFd);

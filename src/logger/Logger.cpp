@@ -2,7 +2,8 @@
 #include <iostream>
 #include <iomanip>
 #include <ctime>
-#include "../irc.hpp"
+#include "../common/constants.hpp"
+#include <sstream>
 
 Logger::Logger() : _consoleOutput(true), _fileOutput(false)
 {

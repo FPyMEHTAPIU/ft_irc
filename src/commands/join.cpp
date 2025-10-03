@@ -12,7 +12,7 @@ std::string handleJoin(Server *server, const std::vector<std::string> &args, std
 
 	std::string channelName = args.at(1);
 	std::string nickname = client->getNick();
-	if (!isValidChannelName(channelName))
+	if (!Validation::isValidChannelName(channelName))
 	{
 		return "476 " + nickname + " " + channelName + " :Bad Channel Mask\r\n";
 	}

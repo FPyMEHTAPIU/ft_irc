@@ -1,15 +1,17 @@
 #include <exception>
 #include <string>
 #include <iostream>
-
-#include "./server/Server.hpp"
+#include "validation/validation.hpp"
+#include "server/Server.hpp"
 #include "irc.hpp"
+#include "common/constants.hpp"
+#include "logger/Logger.hpp"
 
 int main(int argc, char *argv[])
 {
     try
     {
-        int port = validateArgs(argc, argv);
+        int port = Validation::validateArgs(argc, argv);
         std::string password = argv[2];
 
         std::shared_ptr<Logger> logger = std::make_shared<Logger>();

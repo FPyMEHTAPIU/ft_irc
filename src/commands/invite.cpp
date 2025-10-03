@@ -15,7 +15,7 @@ std::string handleInvite(Server *server, const std::vector<std::string> &args, s
     std::string senderNick = client->getNick();
 
     // Validate channel name
-    if (!isValidChannelName(channelName))
+    if (!Validation::isValidChannelName(channelName))
         return "476 " + senderNick + " " + channelName + " :Bad Channel Mask\r\n";
 
     // Check if channel exists

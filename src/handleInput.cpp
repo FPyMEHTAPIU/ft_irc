@@ -1,6 +1,7 @@
 #include "irc.hpp"
-#include "./commands/commands.hpp"
-#include "./server/Server.hpp"
+#include "commands/commands.hpp"
+#include "server/Server.hpp"
+#include "validation/validation.hpp"
 
 std::vector<std::string> trimSplitInput(std::string &input, std::string &msg)
 {
@@ -23,7 +24,7 @@ std::vector<std::string> trimSplitInput(std::string &input, std::string &msg)
 	if (args.empty())
 		return args;
 
-	if (args.at(0).starts_with('/'))
+	if (args.at(0).substr(0, 1) == "/")
 	{
 		args.at(0).erase(args.at(0).begin());
 	}
@@ -41,7 +42,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 
 	std::string cmdLowercase = strToLowercase(args.at(0));
 
-	validateCommand(cmdLowercase);
+	Validation::validateCommand(cmdLowercase);
 
 	std::shared_ptr<Client> client = server->getClients().at(clientFd);
 

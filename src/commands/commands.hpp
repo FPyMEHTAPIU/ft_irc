@@ -1,5 +1,6 @@
 #pragma once
 #include "../irc.hpp"
+#include "../validation/validation.hpp"
 
 std::string handleNick(Server *server, std::shared_ptr<Client> client,
                        std::string &newNick);

@@ -1,4 +1,6 @@
 #include "commands.hpp"
+#include "../logger/Logger.hpp"
+#include "../validation/validation.hpp"
 
 std::string handlePass(Server *server, std::shared_ptr<Client> client, int clientFd,
                        const std::vector<std::string> &args)
@@ -14,7 +16,7 @@ std::string handlePass(Server *server, std::shared_ptr<Client> client, int clien
     try
     {
         server->logger->debug(AUTH, "Validating password...");
-        validateClientPassword(providedPassword, storedPassword);
+        Validation::validateClientPassword(providedPassword, storedPassword);
         client->authenticate();
         server->logger->info(AUTH, "Authenticated " + client->getNick() + "!");
         return "";

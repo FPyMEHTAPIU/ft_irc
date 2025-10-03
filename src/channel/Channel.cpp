@@ -1,5 +1,6 @@
 #include "Channel.hpp"
 #include "../irc.hpp"
+#include "../validation/validation.hpp"
 
 Channel::Channel(std::string name, std::shared_ptr<Client> creator)
 {
@@ -12,7 +13,7 @@ Channel::Channel(std::string name, std::shared_ptr<Client> creator)
     name = "#" + name;
   }
 
-  if (!isValidChannelName(name))
+  if (!Validation::isValidChannelName(name))
   {
     throw std::invalid_argument("Invalid channel name: " + name);
   }
