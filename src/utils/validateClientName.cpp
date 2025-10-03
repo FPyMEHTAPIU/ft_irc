@@ -1,6 +1,5 @@
 #include "../irc.hpp"
 #include <string>
-#include <set>
 #include <algorithm>
 #include <cctype>
 

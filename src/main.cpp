@@ -1,7 +1,6 @@
 #include <exception>
 #include <string>
 #include <iostream>
-#include <cstdlib>
 
 #include "./server/Server.hpp"
 #include "irc.hpp"
