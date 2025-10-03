@@ -15,66 +15,39 @@ private:
   std::string _buffer;
   bool _authenticated;
 
-  void checkRegistration()
-  {
-    _registered = (!_nick.empty() && !_username.empty());
-  }
+  void checkRegistration();
 
 public:
-  Client(int fd)
-      : _fd(fd), _nick(""), _username(""), _realname(""), _registered(false), _authenticated(false) {}
-
-  Client(int fd, const std::string &nick)
-      : _fd(fd), _nick(nick), _username(""), _realname(""), _registered(false)
-  {
-    checkRegistration();
-  }
-
-  Client(int fd, const std::string &nick, const std::string &user, const std::string &real)
-      : _fd(fd), _nick(nick), _username(user), _realname(real), _registered(false)
-  {
-    checkRegistration();
-  }
+  Client(int fd);
+  Client(int fd, const std::string &nick);
+  Client(int fd, const std::string &nick, const std::string &user, const std::string &real);
 
   Client &operator=(Client const &client) = delete;
 
-  ~Client() {}
+  ~Client();
 
-  bool operator<(Client const &client) const
-  {
-    return _fd < client._fd;
-  }
+  bool operator<(Client const &client) const;
 
-  std::string getNick() const { return _nick; }
-  std::string getUsername() const { return _username; }
-  std::string getRealName() const { return _realname; }
-  void setNick(const std::string &newNick)
-  {
-    _nick = newNick;
-    checkRegistration();
-  }
+  std::string getNick() const;
+  std::string getUsername() const;
+  std::string getRealName() const;
+  void setNick(const std::string &newNick);
+  void setUser(const std::string &user, const std::string &real);
 
-  void setUser(const std::string &user, const std::string &real)
-  {
-    _username = user;
-    _realname = real;
-    checkRegistration();
-  }
-
-  int getFd() const { return _fd; }
+  int getFd() const;
 
   // Message queue helpers
-  void enqueueMessage(const std::string &msg) { _writeQueue.push_back(msg); }
-  bool hasPendingMessages() const { return !_writeQueue.empty(); }
-  std::string &frontMessage() { return _writeQueue.front(); }
-  void popMessage() { _writeQueue.pop_front(); }
+  void enqueueMessage(const std::string &msg);
+  bool hasPendingMessages() const;
+  std::string &frontMessage();
+  void popMessage();
 
-  bool isRegistered() const { return _registered; };
+  bool isRegistered() const;
 
   // Authentication helpers
-  void authenticate() { _authenticated = true; };
-  bool isAuthenticated() const { return _authenticated; };
+  void authenticate();
+  bool isAuthenticated() const;
 
-  std::string &getBuffer() { return _buffer; }
-  void clearBuffer() { _buffer.clear(); }
+  std::string &getBuffer();
+  void clearBuffer();
 };
