@@ -13,10 +13,10 @@ std::string handlePass(Server *server, std::shared_ptr<Client> client, int clien
 
     try
     {
-        server->logger->debug(AUTH, "Validating password...");
+        server->logger->info(AUTH, "Validating password...");
         validateClientPassword(providedPassword, storedPassword);
         client->authenticate();
-        server->logger->info(AUTH, "Authenticated " + client->getNick() + "!");
+        server->logger->success(AUTH, "Successfully authenticated client fd " + std::to_string(clientFd));
         return "";
     }
     catch (const std::exception &e)

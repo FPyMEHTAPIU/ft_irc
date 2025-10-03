@@ -50,7 +50,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 		msg = "464 " + (client->getNick().empty() ? "*" : client->getNick()) + " :Password required\r\n";
 		client->enqueueMessage(msg);
 		server->enableWrite(clientFd);
-		throw std::invalid_argument("Password required!");
+		server->logger->error(AUTH, "Password required");
 	}
 
 	std::string storedPassword = server->getPassword();
@@ -75,12 +75,11 @@ void handleInput(std::string input, Server *server, int clientFd)
 		result = handleJoin(server, args, client);
 		break;
 	case hash("invite"):
-		std::cout << "inviting..." << args.at(1) << std::endl;
+		server->logger->info(CLIENT, "inviting " + args.at(1));
 		result = handleInvite(server, args, client);
 		break;
 	case hash("leave"):
 	case hash("part"):
-		std::cout << "leaving channel..." << std::endl;
 		result = handlePart(server, args, client, msg);
 		break;
 

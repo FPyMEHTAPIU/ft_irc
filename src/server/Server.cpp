@@ -294,7 +294,7 @@ void Server::handleClientData(int clientFd)
 
     std::shared_ptr<Client> client = _clients.at(clientFd);
 
-    logger->info(CLIENT, "Received from client fd " + std::to_string(clientFd) + ": " + buffer);
+    logger->info(CLIENT, "Client fd " + std::to_string(clientFd) + ": " + buffer);
 
     // Append the received data to the buffer
     if (client->getBuffer().length() + bytesRead > BUFFER_SIZE)
@@ -399,8 +399,7 @@ void Server::removeClient(int clientFd)
     {
         _clients.erase(clientIt);
     }
-
-    std::cout << "Client FD " << clientFd << " fully removed." << std::endl;
+    logger->success(CLIENT, "Fully removed client FD " + std::to_string(clientFd));
 }
 
 void Server::removeChannel(std::string channelName)
