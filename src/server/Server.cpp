@@ -1,15 +1,8 @@
 #include "Server.hpp"
-#include "../logger/Logger.hpp"
-#include "../commands/commands.hpp"
-#include <stdexcept>
 #include <cstring>
 #include <cerrno>
-#include <poll.h>
-#include <iostream>
-#include <set>
 #include <string>
 #include <algorithm> // for std::find_if
-#include <sys/fcntl.h>
 #include <termios.h>
 #include <csignal>
 
@@ -68,6 +61,12 @@ std::shared_ptr<Client> Server::getClientByNick(const std::string &nick, const s
         }
     }
     throw std::invalid_argument(":ircserv 401 " + senderNick + " " + nick + " :No such nick\r\n");
+}
+
+std::shared_ptr<Client> Server::getClientByFd(const int &fd)
+{
+    auto clientPair = _clients.find(fd);
+    return clientPair->second;
 }
 
 bool Server::hasNick(const std::string &nick) const

@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <set>
 #include <map>
 #include <vector>
 #include <poll.h>
@@ -66,6 +65,7 @@ public:
   const std::vector<struct pollfd> &getPollFds() const;
   const std::string &getPassword() const;
   std::shared_ptr<Client> getClientByNick(const std::string &nick, const std::string &senderNick);
+  std::shared_ptr<Client> getClientByFd(const int &fd);
   std::shared_ptr<Channel> getChannelByName(const std::string &channelName);
   bool hasNick(const std::string &nick) const;
 

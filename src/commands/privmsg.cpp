@@ -75,7 +75,8 @@ void handlePrivmsg(Server *server, std::vector<std::string> args, int senderFd, 
 	}
 	catch (std::exception &e)
 	{
-		std::string err = e.what();
-		std::cerr << "Exception: " << err << std::endl;
+		std::shared_ptr<Client> sender = server->getClientByFd(senderFd);
+		sender->enqueueMessage(e.what());
+		server->enableWrite(senderFd);
 	}
 }
