@@ -103,7 +103,7 @@ void Server::addClient(int fd, Client client)
 void Server::setupSocket()
 {
     // Create socket with SOCK_NONBLOCK
-    _serverSocket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0); // | SOCK_NONBLOCK, 0); commented for MacOS, doesn't work with nonblock
+    _serverSocket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 
     if (_serverSocket == -1)
     {
@@ -341,9 +341,6 @@ void Server::handleClientWrite(int fd)
         }
 
         std::string &msg = client->frontMessage();
-
-        // delete the line bellow later
-        std::cout << "SENDING: " << msg << std::endl;
 
         ssize_t sent = send(fd, msg.c_str(), msg.size(), 0);
 
