@@ -117,7 +117,7 @@ int validatePort(const std::string &strPort)
     int port = std::stoi(strPort);
     if (port < 1024 || port > 65535)
     {
-        throw std::invalid_argument("Invalid port number. Must be between 1024 and 65535.");
+        throw std::out_of_range("Invalid port number. Must be between 1024 and 65535.");
     }
     return port;
 }

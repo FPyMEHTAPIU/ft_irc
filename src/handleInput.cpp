@@ -50,7 +50,7 @@ void handleInput(std::string input, Server *server, int clientFd)
 		msg = "464 " + (client->getNick().empty() ? "*" : client->getNick()) + " :Password required\r\n";
 		client->enqueueMessage(msg);
 		server->enableWrite(clientFd);
-		server->logger->error(AUTH, "Password required");
+		throw std::invalid_argument("Password required");
 	}
 
 	std::string storedPassword = server->getPassword();
