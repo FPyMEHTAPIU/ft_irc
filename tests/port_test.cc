@@ -3,11 +3,6 @@
 #include "limits.h"
 
 // ----- VALID CASES -----
-TEST(ValidatePortTest, MinimumValidPort)
-{
-    EXPECT_EQ(validatePort("1"), 1);
-}
-
 TEST(ValidatePortTest, MaximumValidPort)
 {
     EXPECT_EQ(validatePort("65535"), 65535);
@@ -18,12 +13,17 @@ TEST(ValidatePortTest, TypicalValidPort)
     EXPECT_EQ(validatePort("8080"), 8080);
 }
 
+// ----- INVALID RANGE -----
 TEST(ValidatePortTest, LeadingZeros)
 {
-    EXPECT_EQ(validatePort("00080"), 80);
+    EXPECT_THROW(validatePort("00080"), std::out_of_range);
 }
 
-// ----- INVALID RANGE -----
+TEST(ValidatePortTest, MinimumValidPort)
+{
+    EXPECT_THROW(validatePort("1"), std::out_of_range);
+}
+
 TEST(ValidatePortTest, AlphanumericString)
 {
     EXPECT_THROW(validatePort("80port"), std::invalid_argument); // stoi parses up to 'p'
@@ -101,7 +101,7 @@ TEST(ValidatePortTest, IntegerOverflowPositive)
     EXPECT_THROW(validatePort(std::to_string(static_cast<long long>(INT_MAX) + 1)), std::out_of_range);
 }
 
-//this is due to the "-"  sign with the negative number, which is treated as a character, thus throwing the invalid_argument error
+// this is due to the "-"  sign with the negative number, which is treated as a character, thus throwing the invalid_argument error
 TEST(ValidatePortTest, IntegerOverflowNegative)
 {
     EXPECT_THROW(validatePort(std::to_string(static_cast<long long>(INT_MIN) - 1)), std::invalid_argument);

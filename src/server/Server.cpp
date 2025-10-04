@@ -312,18 +312,18 @@ void Server::handleClientData(int clientFd)
         client->getBuffer().erase(0, pos + 1);
 
         // Process the complete command
-        std::vector<std::string> cmds = split(message, '\n');
-        for (const std::string &cmd : cmds)
+        try
         {
-            try
+            std::vector<std::string> cmds = split(message, '\n');
+            for (const std::string &cmd : cmds)
             {
                 handleInput(cmd, this, clientFd);
             }
-            catch (std::exception &e)
-            {
-                std::cerr << e.what() << std::endl;
-                break;
-            }
+        }
+        catch (std::exception &e)
+        {
+            logger->error(CLIENT, e.what());
+            break;
         }
     }
 }

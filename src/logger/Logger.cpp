@@ -158,6 +158,5 @@ void Logger::writeLog(const std::string &formattedMessage)
     if (_fileOutput && _logFile.is_open())
     {
         _logFile << formattedMessage << std::endl;
-        _logFile.flush();
     }
 }
